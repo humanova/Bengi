@@ -13,7 +13,7 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 	{
 		BengiError(Error::NO_INPUT_FILES);
 		PrintUsage();
-		exit(1);
+		exit(-1);
 	}
 
 	else if (argc == 2)
@@ -41,13 +41,13 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 			if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help"))
 			{
 				PrintUsage();
-				exit(1);
+				exit(-1);
 			}
 			
 			else if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--version"))
 			{
 				PrintVersion();
-				exit(1);
+				exit(-1);
 			}
 
 			else if (!strcmp(argv[i], "-s"))
@@ -55,7 +55,7 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 				if (!(i + 1 < argc))
 				{
 					BengiError(NO_INPUT_FILES);
-					exit(1);
+					exit(-1);
 				}
 				iofile.LoadSource(argv[i + 1]);
 				i++;
@@ -66,12 +66,12 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 				if (iofile.isOutputSet())
 				{
 					BengiError(OUTPUT_ALREADY_SET);
-					exit(1);
+					exit(-1);
 				}
 				else if (!(i + 1 < argc))
 				{
 					BengiError(OUTPUT_NOT_SET);
-					exit(1);
+					exit(-1);
 				}
 				iofile.outPath = argv[i + 1];
 				i++;
@@ -80,12 +80,12 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 			else
 			{
 				//if not starts with '-', it may be source
-				if (argv[i][0] != 45)
+				if (argv[i][0] != '-')
 				{
 					if (iofile.isSourceSet())
 					{
 						BengiError(SOURCE_ALREADY_SET);
-						exit(1);
+						exit(-1);
 					}
 					else
 					{
@@ -95,7 +95,7 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 				else
 				{
 					BengiError(COMMAND_NOT_RECOGNIZED, argv[i]);
-					exit(1);
+					exit(-1);
 				}
 			}
 		}

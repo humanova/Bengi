@@ -1,16 +1,17 @@
+//Emir Erbasan 2018
+
+#include "ArgParser.h"
 #include "Lexer.h"
 #include "Parser.h"
-#include "Usage.h"
-#include "ArgParser.h"
+#include "VM.h"
 
-#include "IOFile.h"
 
 int main(int argc, char* argv[])
 {
 	IOFile iofile;
 	ParseArg(argc, argv, iofile);
 
-
-
+	VM BengiVM(iofile);
+	
 	return 0;
 }
