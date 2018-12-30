@@ -1,5 +1,8 @@
 #include "IOFile.h"
 
+//disable 
+#pragma warning( disable : 4996 )
+
 //Default constructor
 IOFile::IOFile()
 {
@@ -15,44 +18,43 @@ IOFile::IOFile(char* sourcePath, char* outPath)
 	return;
 }
 
-
-void IOFile::LoadSource(char* sourcePath, FILE* file)
+FILE* IOFile::LoadSource(char* sourcePath, FILE* file)
 {
-	fopen_s(&file,sourcePath, "r");
+	file = fopen(sourcePath, "r");
 	if (file == NULL)
 	{
 		BengiError(Error::INPUT_FILE_NOT_FOUND);
 		exit(-1);
 	}
 	this->sourcePath = sourcePath;
+	return file;
 }
 
-void IOFile::LoadSource(char* sourcePath)
+FILE* IOFile::LoadSource(char* sourcePath)
 {
-	fopen_s(&sourceFile, sourcePath, "r");
+	sourceFile = fopen(sourcePath, "r");
 	if (sourceFile == NULL)
 	{
 		BengiError(Error::INPUT_FILE_NOT_FOUND);
 		exit(-1);
 	}
 	this->sourcePath = sourcePath;
+	return sourceFile;
 }
 
-void IOFile::LoadSource()
+FILE* IOFile::LoadSource()
 {
-	fopen_s(&sourceFile, sourcePath, "r");
+	sourceFile = fopen(sourcePath, "r");
 	if (sourceFile == NULL)
 	{
 		BengiError(Error::INPUT_FILE_NOT_FOUND);
 		exit(-1);
 	}
 	this->sourcePath = sourcePath;
+	return sourceFile;
 }
-
-
 
 //========== LOAD FILE WITH STRING STUFF ===========
-
 
 //Constructor with pre-defined s_sourcePath and s_outPath
 IOFile::IOFile(std::string s_sourcePath, std::string s_outPath)

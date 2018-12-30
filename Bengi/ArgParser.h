@@ -1,4 +1,5 @@
 #pragma once
+#include <cstring>
 #include "IOFile.h"
 #include "Error.h"
 #include "Usage.h"

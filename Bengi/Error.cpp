@@ -4,34 +4,33 @@ void BengiError(int errorId, char* arg)
 {
 	switch (errorId)
 	{
-	case 0:
+	case NO_INPUT_FILES:
 		std::cerr << "bengi error : No input files" << std::endl;
 		break;
 
-	case 1:
+	case INPUT_FILE_NOT_FOUND:
 		std::cerr << "bengi error : Input file not found" << std::endl;
 		break;
 
-	case 2:
-		std::cerr << "bengi error : Too many options" << std::endl;
+	case TOO_MANY_ARGUMENTS:
+		std::cerr << "bengi error : Too many arguments" << std::endl;
 		break;
 
-	case 3:
+	case COMMAND_NOT_RECOGNIZED:
 		std::cerr << "bengi error : '" << arg << "' command not recognized. Use --help to see CL arguments" << std::endl;
 		break;
 
-	case 4:
+	case OUTPUT_NOT_SET:
 		std::cerr << "bengi error : Output file not set" << std::endl;
 		break;
 
-	case 5:
+	case SOURCE_ALREADY_SET:
 		std::cerr << "bengi error : Source file is already set" << std::endl;
 		break;
 
-	case 6:
+	case OUTPUT_ALREADY_SET:
 		std::cerr << "bengi error : Output file is already set" << std::endl;
 		break;
-
 
 	default:
 		std::cerr << "wrong error id";
@@ -57,6 +56,10 @@ void VMError(int errorId, int arg)
 
 	case MALLOC_ERROR_STACK_SEGMENT:
 		std::cerr << "bengi error : [VM] Couldn't allocate memory for the stack segment" << std::endl;
+		break;
+
+	case MALLOC_ERROR_SYMBOL_TABLE:
+		std::cerr << "bengi error : [VM] Couldn't allocate memory for the symbol table" << std::endl;
 		break;
 
 	case VM_UNKNOWN_INSTRUCTION:

@@ -120,9 +120,7 @@
     <ClCompile Include="ArgParser.cpp" />
     <ClCompile Include="Error.cpp" />
     <ClCompile Include="IOFile.cpp" />
-    <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Usage.cpp" />
     <ClCompile Include="VM.cpp" />
   </ItemGroup>
@@ -130,10 +128,7 @@
     <ClInclude Include="ArgParser.h" />
     <ClInclude Include="Error.h" />
     <ClInclude Include="IOFile.h" />
-    <ClInclude Include="Lexer.h" />
-    <ClInclude Include="Parser.h" />
     <ClInclude Include="Usage.h" />
-    <ClInclude Include="utils.h" />
     <ClInclude Include="VM.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

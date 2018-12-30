@@ -5,8 +5,6 @@
 
 #include "Error.h"
 
-
-
 class IOFile
 {
 public:
@@ -25,9 +23,9 @@ public:
 	std::ofstream s_outFile;
 	std::string s_outPath;
 
-	void LoadSource(char* sourcePath);
-	void LoadSource(char* sourcePath, FILE* outPath);
-	void LoadSource();
+	FILE* LoadSource(char* sourcePath);
+	FILE* LoadSource(char* sourcePath, FILE* outPath);
+	FILE* LoadSource();
 
 	void s_LoadSource(std::string sourcePath, std::ofstream &file);
 	void s_LoadSource(std::string sourcePath);
@@ -38,8 +36,6 @@ public:
 
 	bool s_isSourceSet(); 
 	bool s_isOutputSet();
-
-
 
 private:
 

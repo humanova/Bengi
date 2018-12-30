@@ -1,5 +1,6 @@
 #include "ArgParser.h"
 
+#pragma warning(disable: 4996)
 
 void ParseArg(int argc, char* argv[], IOFile &iofile)
 {
@@ -30,7 +31,7 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 		}
 		else
 		{
-			iofile.LoadSource(argv[1]);
+			iofile.sourcePath = argv[1];
 			return;
 		}
 	}
@@ -57,7 +58,7 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 					BengiError(NO_INPUT_FILES);
 					exit(-1);
 				}
-				iofile.LoadSource(argv[i + 1]);
+				iofile.sourcePath = argv[i + 1];
 				i++;
 			}
 
@@ -77,6 +78,15 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 				i++;
 			}
 
+			else if (!strcmp(argv[i], "-c") || !strcmp(argv[i], "--compile"))
+			{
+				char command[] = "basm ";
+				char* comm;
+				comm = strcat(command, argv[i + 1]);
+				system(comm);
+				i++;
+			}
+
 			else
 			{
 				//if not starts with '-', it may be source
@@ -89,7 +99,7 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 					}
 					else
 					{
-						iofile.LoadSource(argv[i]);
+						iofile.sourcePath = argv[i + 1];
 					}
 				}
 				else
@@ -101,5 +111,4 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 		}
 	}
 	return;
-
 }
