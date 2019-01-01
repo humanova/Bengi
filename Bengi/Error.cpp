@@ -4,8 +4,12 @@ void BengiError(int errorId, char* arg)
 {
 	switch (errorId)
 	{
-	case NO_INPUT_FILES:
+	case NO_INPUT_FILE:
 		std::cerr << "bengi error : No input files" << std::endl;
+		break;
+
+	case BASM_NOT_SET:
+		std::cerr << "bengi error : No basm files" << std::endl;
 		break;
 
 	case INPUT_FILE_NOT_FOUND:

@@ -5,7 +5,7 @@ void PrintUsage()
 	std::cerr << "Usage : bengi [options] file\n"
 	<< "Options: \n"
 	<< "\t-h, --help              Display this information\n"
-	<< "\t-c, --compile			  Compile given bengi-asm file to binary\n"
+	<< "\t-c, --compile		Compile given basm file to .cben\n"
 	<< "\t-s                      Set input file(path,name)\n"
 	<< "\t-o, --output            Specify the output(path,name)\n"
 	<< "\t-v, --version           Display version information"

@@ -12,7 +12,7 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 
 	if (argc < 2)
 	{
-		BengiError(Error::NO_INPUT_FILES);
+		BengiError(Error::NO_INPUT_FILE);
 		PrintUsage();
 		exit(-1);
 	}
@@ -55,7 +55,7 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 			{
 				if (!(i + 1 < argc))
 				{
-					BengiError(NO_INPUT_FILES);
+					BengiError(NO_INPUT_FILE);
 					exit(-1);
 				}
 				iofile.sourcePath = argv[i + 1];
@@ -80,11 +80,17 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 
 			else if (!strcmp(argv[i], "-c") || !strcmp(argv[i], "--compile"))
 			{
+				if (!(i + 1 < argc))
+				{
+					BengiError(BASM_NOT_SET);
+					exit(-1);
+				}
 				char command[] = "basm ";
 				char* comm;
 				comm = strcat(command, argv[i + 1]);
 				system(comm);
 				i++;
+				exit(1); // for now
 			}
 
 			else

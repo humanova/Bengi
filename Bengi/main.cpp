@@ -1,4 +1,4 @@
-//Emir Erbasan 2018
+//Emir Erbasan 2018-19
 
 #include "ArgParser.h"
 #include "VM.h"
@@ -10,19 +10,9 @@ int main(int argc, char* argv[])
 	IOFile iofile;
 	ParseArg(argc, argv, iofile);
 
-	ifstream bin_file(iofile.sourcePath, ios::binary);
-	i32 i;
-
-	vector<i32> prog;
-
-	while (bin_file.read((char *)&i, sizeof(i)))
-	{
-		prog.push_back(i);
-	}
-
 	VM BengiVM;
-	BengiVM.loadProgram(prog);
-	BengiVM.run();
+	BengiVM.loadBinary(iofile.sourcePath);
+	i32 result = BengiVM.run();
 
-	return 0;
+	return result;
 }
