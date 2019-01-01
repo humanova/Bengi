@@ -13,6 +13,7 @@ class VM
 	i32 SP = 0; // stack pointer
 	i32 BP = 0; //base pointer
 	i32 AX = 0; // general register
+	i32 BX = 0; // general register
 	
 	vector<i32> Memory;
 
@@ -45,6 +46,7 @@ public:
 	//public functions
 	VM();
 	i32 run();
+	//void reset();
 	void loadProgram(vector<i32> prog);
 	void loadBinary(string path);
 	bool debug = true;

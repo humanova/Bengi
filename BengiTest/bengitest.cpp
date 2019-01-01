@@ -7,15 +7,19 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 string testFolder = "C:\\Users\\msi\\Desktop\\VSCode Folder\\Bengi-Lang\\tests\\";
 vector<string> test
-{	testFolder + "test1.cben",
+{ testFolder + "test1.cben",
 	testFolder + "test2.cben",
-	testFolder + "test3.cben"
+	testFolder + "test3.cben",
+	testFolder + "test4.cben",
+	testFolder + "test5.cben"
 };
 vector<i32> testResult
 {
 	40,
 	10,
-	11
+	11,
+	55,
+	100
 };
 
 namespace BengiTest
@@ -51,6 +55,25 @@ namespace BengiTest
 			VM testVM;
 			testVM.loadBinary(test[2]);
 			Assert::AreEqual(testResult[2], testVM.run());
+		}
+	};
+
+	TEST_CLASS(ArithmeticConditional)
+	{
+	public:
+
+		TEST_METHOD(Test1)
+		{
+			VM testVM;
+			testVM.loadBinary(test[3]);
+			Assert::AreEqual(testResult[3], testVM.run());
+		}
+
+		TEST_METHOD(Test2)
+		{
+			VM testVM;
+			testVM.loadBinary(test[4]);
+			Assert::AreEqual(testResult[4], testVM.run());
 		}
 	};
 }

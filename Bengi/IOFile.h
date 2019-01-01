@@ -13,10 +13,10 @@ public:
 	IOFile(char* sourcePath, char* outPath);
 	IOFile(std::string sourcePath, std::string outPath);
 
-	FILE* sourceFile;
-	FILE* outFile;
-	char* sourcePath;
-	char* outPath;
+	FILE* sourceFile = NULL;
+	FILE* outFile = NULL;
+	char* sourcePath = NULL;
+	char* outPath = NULL;
 
 	std::ifstream s_sourceFile;
 	std::string s_sourcePath;
