@@ -4,7 +4,7 @@
 	Instruction Format
 
 	header : 2 bits (3 bits for registers)
-	data : 30 bits
+	data : 30 bits (29 bits for register data)
 	
 	header format :
 	0 (00) => positive integer
@@ -16,6 +16,15 @@
 	// 2 -> sp
 	// 3 -> bp
 	// 4 -> pc
+
+	bengi calling convention:
+
+	push arg2
+	push arg1
+	call func (push PC on stack, jmp func address)
+	add 
+
+	
 */
 
 VM::VM()
@@ -23,10 +32,10 @@ VM::VM()
 	Memory.resize(1000000);
 }
 
-i32 VM::getType(i32 instruction)
+i32 VM::getType(ui32 instruction)
 {
-	i32 type = 0xc0000000;
-	type = (instruction & type);
+	ui32 type = 0xc0000000;
+	type = instruction & type;
 	if (type == 0xc0000000) {
 		type = type = (0xe0000000 & instruction) >> 29;
 		if (type == 7) return 3;
@@ -40,14 +49,47 @@ i32 VM::getType(i32 instruction)
 	}
 }
 
-i32 VM::getData(i32 instruction)
+i32 VM::getData(ui32 instruction)
 {
-	i32 data = 0x3fffffff;
-	if (typ == REG) {
-		data = 0x1fffffff;
+	if (typ == PINT)
+	{
+		i32 data = 0x3fffffff;
+		data = data & instruction;
+		return data;
 	}
-	data = data & instruction;
-	return data;
+	else if (typ == NINT)
+	{
+		i32 data = 0x3fffffff;
+		data = -1 * (data & instruction);
+		return data;
+	}
+	else if (typ == INST)
+	{
+		i32 data = 0x3fffffff;
+		data = data & instruction;
+		return data;
+	}
+	else if (typ == REG) 
+	{
+		i32 data = 0x1fffffff;
+		data = data & instruction;
+		return data;
+	}
+	else if (typ == ADDR)
+	{
+		i32 data = 0x3fffffff;
+		data = data & instruction;
+		return data;
+	}
+	else if (typ == SYMB)
+	{
+		return instruction;
+	}
+	else
+	{
+		printf("bengivm error : unknown instruction type : %d", typ);
+		exit(1);
+	}
 }
 
 i32* VM::getAddress(i32 data)
@@ -74,12 +116,16 @@ i32* VM::getAddress(i32 data)
 	}
 	else
 	{
-		
+		// Stack frame icindeysek negatif degerlerden 1 cikaricaz [-1] demek [-2] demek
 		char buffer[33];
 		string data_str = string((char *)(itoa(data, buffer, 10)));
 		data_str = "[" + data_str + "]";
 		curr_addr = data_str;
-		return &Memory[data];
+		if (BP != 0 && data < 0)
+		{
+			data -= 1;
+		}
+		return &Memory[BP + data];
 	}
 }
 
@@ -139,6 +185,39 @@ const char* VM::getRegisterName(i32* reg)
 		cout << "bengivm error(getRegisterName) : invalid register reference";
 		exit(1);
 	}
+}
+
+vector<VM::Symbol> VM::GetSymbolTable(vector<ui32> instructions)
+{
+	vector<VM::Symbol> symbols;
+	for (int i = 0; i < instructions.size(); i++)
+	{
+		if (instructions[i] == 0x40000090) // Func decleration
+		{
+			Symbol symbol;
+			symbol.symbol = instructions[++i];
+			symbol.address = 1000 + i;
+			symbols.push_back(symbol);
+			if (debug)
+				printf("Func found : address -> %d | symbol - > %x\n", symbol.address, symbol.symbol);
+		}
+	}
+	return symbols;
+}
+
+VM::Symbol VM::GetSymbol(i32 symbol_id)
+{
+	for (int i = 0; i < SymbolTable.size(); i++)
+	{
+		//printf("Symbol[%d] : symbol_id -> %d | address -> %x", i, SymbolTable[i].symbol, SymbolTable[i].address);
+		if (SymbolTable[i].symbol == symbol_id)
+		{
+			return SymbolTable[i];
+		}
+	}
+
+	printf("bengivm error : [PC=%d] wrong symbol id : 0x%x\n",PC, symbol_id);
+	exit(1);
 }
 
 void VM::fetch()
@@ -250,7 +329,7 @@ void VM::doPrimitive()
 		SP--;
 		break;
 
-		// == Classic Instructions == 
+		// == Basic Instructions == 
 
 
 	case 0x50: // push
@@ -311,7 +390,7 @@ void VM::doPrimitive()
 		}
 		break;
 
-	case 0x53: // mov
+	case 0x53: // mov dest src
 		fetch();
 		decode();
 		{
@@ -497,18 +576,56 @@ void VM::doPrimitive()
 		else
 		{
 			cout << "bengivm error : invalid cmp argument" << endl;
-
 		}
-		
+		break;
+	//TODOS :
+	case 0x90:	// Function Decleration
+		fetch();
+		typ = SYMB;
+		getData(Memory[PC]);
+		break;
+
+	case 0x91: // Func Return
+		BP = Memory[SP--];
+		PC = Memory[SP--];
+		if (debug) printf("ret (%d)\n", PC);
+		break;
+
+	// Func Call:
+	// push PC
+	// push BP
+	// PC = new PC (jump)
+	// BP = BP indis
+	case 0x92: 
+		fetch();
+		typ = SYMB;
+		//push PC
+		Memory[++SP] = PC + 1;
+		//push BP
+		Memory[++SP] = BP;
+
+		//set PC 
+		dat = getData(Memory[PC]);
+		Symbol symb = GetSymbol(dat);
+		PC = symb.address;
+		//set BP
+		BP = SP;
+
+		if (debug) printf("call %x (%d)\n", symb.symbol, PC );
+
+		break;
 	}
 }
 
 i32 VM::run()
 {
-	PC -= 1;
+	//PC -= 1;
+	// Get main function address
+	PC = GetSymbol(0x10000000).address; 
 	
 	while (running)
 	{
+		printf("BengiVM[PC=%d] : \n", PC);
 		fetch();
 		decode();
 		execute();
@@ -529,7 +646,7 @@ i32 VM::run()
 }*/
 
 
-void VM::loadProgram(vector<i32> prog)
+void VM::loadProgram(vector<ui32> prog)
 {
 	for (i32 i = 0; i < prog.size(); i++)
 	{
@@ -540,12 +657,13 @@ void VM::loadProgram(vector<i32> prog)
 void VM::loadBinary(string path)
 {
 	i32 i;
-	vector<i32> prog;
+	vector<ui32> prog;
 	ifstream bin_file(path.c_str(), ios::binary);
 	while (bin_file.read((char *)&i, sizeof(i)))
 	{
 		prog.push_back(i);
 	}
 	if (debug) cout << "instructions : " << prog.size() << endl;
+	this->SymbolTable = GetSymbolTable(prog);
 	loadProgram(prog);
 }
