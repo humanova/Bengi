@@ -11,6 +11,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BengiUnitTest", "BengiUnitT
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "basm", "basm\basm\basm\basm.vcxproj", "{03881EEE-1DB6-4755-B3DC-998D5366BAB2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{404D8402-3914-4206-931F-CF2B67A556BB}"
+	ProjectSection(SolutionItems) = preProject
+		Bengi Instructions.txt = Bengi Instructions.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

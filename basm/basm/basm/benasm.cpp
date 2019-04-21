@@ -10,7 +10,7 @@ using namespace std;
 // functions
 vector<ui32> compileToInstructions(strings s);
 bool isInteger(string s);
-bool isPrimitive(string s);
+//bool isPrimitive(string s);
 bool isAddress(string s);
 bool isFunction(string s);
 bool isNegative(string s);
@@ -99,7 +99,7 @@ vector<ui32> compileToInstructions(strings s)
 			if (isInteger(s[i + 1]))
 			{
 				ui32 num = stoi(s[++i]);
-				ui32 instruction = 0x80000000 | num;
+				ui32 instruction = 0x20000000 | num;
 				instructions.push_back(instruction);
 			}
 			else
@@ -153,8 +153,9 @@ vector<ui32> compileToInstructions(strings s)
 			instructions.push_back(FuncInstruction);
 
 			// Get symbol by function name
-			cout << "symbolizing function : " << func_name << endl;
+
 			ui32 FunctionSymbol = mapToSymbol(func_name);
+			printf("symbolizing function : %s (symbol : %x)\n",func_name, FunctionSymbol);
 			instructions.push_back(FunctionSymbol);
 
 		}
@@ -247,7 +248,7 @@ bool DefineMain()
 {
 	Symbol symbol;
 	symbol.name = "main";
-	symbol.symbol = 0x10000000;
+	symbol.symbol = 0xE0000000;
 	SymbolTable.push_back(symbol);
 }
 
@@ -268,7 +269,7 @@ ui32 mapToSymbol(string s)
 		if (!isMainDefined)
 		{
 			isMainDefined = true;
-			return 0x10000000;
+			return 0xE0000000;
 		}
 		else
 		{
@@ -292,140 +293,140 @@ ui32 mapToNumber(string s)
 {
 	if (s == "end")
 	{
-		return 0x40000000;
+		return 0x80000000;
 	}
 	else if (s == "add")
 	{
-		return 0x40000001;
+		return 0x80000001;
 	}
 	else if (s == "sub")
 	{
-		return 0x40000002;
+		return 0x80000002;
 	}
 	else if (s == "mul")
 	{
-		return 0x40000003;
+		return 0x80000003;
 	}
 	else if (s == "div")
 	{
-		return 0x40000004;
+		return 0x80000004;
 	}
 	else if (s == "mod")
 	{
-		return 0x40000005;
+		return 0x80000005;
 	}
 	else if (s == "or")
 	{
-		return 0x40000006;
+		return 0x80000006;
 	}
 	else if (s == "xor")
 	{
-		return 0x40000007;
+		return 0x80000007;
 	}
 	else if (s == "and")
 	{
-		return 0x40000008;
+		return 0x80000008;
 	}
 	else if (s == "eq")
 	{
-		return 0x40000009;
+		return 0x80000009;
 	}
 	else if (s == "ne")
 	{
-		return 0x4000000A;
+		return 0x8000000A;
 	}
 	else if (s == "lt")
 	{
-		return 0x4000000B;
+		return 0x8000000B;
 	}
 	else if (s == "le")
 	{
-		return 0x4000000C;
+		return 0x8000000C;
 	}
 	else if (s == "gt")
 	{
-		return 0x4000000D;
+		return 0x8000000D;
 	}
 	else if (s == "ge")
 	{
-		return 0x4000000E;
+		return 0x8000000E;
 	}
 	else if (s == "shl")
 	{
-		return 0x4000000F;
+		return 0x8000000F;
 	}
 	else if (s == "shr")
 	{
-		return 0x40000010;
+		return 0x80000010;
 	}
 
 	// primitive instructions
 	else if (s == "push")
 	{
-		return 0x40000050;
+		return 0x80000050;
 	}
 	else if (s == "pop")
 	{
-		return 0x40000051;
+		return 0x80000051;
 	}
 	else if (s == "load")
 	{
-		return 0x40000052;
+		return 0x80000052;
 	}
 	else if (s == "mov")
 	{
-		return 0x40000053;
+		return 0x80000053;
 	}
 	else if (s == "jmp")
 	{
-		return 0x40000054;
+		return 0x80000054;
 	}
 	else if (s == "jz")
 	{
-		return 0x40000055;
+		return 0x80000055;
 	}
 	else if (s == "jnz")
 	{
-		return 0x40000056;
+		return 0x80000056;
 	}
 	else if (s == "cmp")
 	{
-		return 0x40000057;
+		return 0x80000057;
 	}
 	else if (s == "func")
 	{
-		return 0x40000090;
+		return 0x80000090;
 	}
 	else if (s == "ret")
 	{
-		return 0x40000091;
+		return 0x80000091;
 	}
 	else if (s == "call")
 	{
-		return 0x40000092;
+		return 0x80000092;
 	}
 
 
 	// registers
 	else if (s == "ax")
 	{
-		return 0xe0000001;
+		return 0xc0000001;
 	}
 	else if (s == "bx")
 	{
-		return 0xe0000002;
+		return 0xc0000002;
 	}
 	else if (s == "sp")
 	{
-		return 0xe0000003;
+		return 0xc0000003;
 	}
 	else if (s == "bp")
 	{
-		return 0xe0000004;
+		return 0xc0000004;
 	}	
 	else if (s == "pc")
 	{
-		return 0xe0000005;
+		return 0xc0000005;
 	}
 	// reg addresses
 	else if (s.front() == '[' && s.back() == ']') 
@@ -434,19 +435,19 @@ ui32 mapToNumber(string s)
 		s.pop_back();  // delete ]
 		if (s == "ax")
 		{
-			return 0xcffffff1;
+			return 0xc00000f1;
 		}
 		else if (s == "bx")
 		{
-			return 0xcffffff2;
+			return 0xc00000f2;
 		}
 		else if (s == "sp")
 		{
-			return 0xcffffff3;
+			return 0xc00000f3;
 		}
 		else if (s == "bp")
 		{
-			return 0xcffffff4;
+			return 0xc00000f4;
 		}
 		else
 		{
@@ -454,11 +455,11 @@ ui32 mapToNumber(string s)
 			ui32 instruction;
 			if (s.front() == '-')
 			{
-				instruction = 0x80000000;
+				instruction = 0x40000000;
 				s.erase(0, 1);
 			}
 			else
-				instruction = 0xc0000000;
+				instruction = 0x60000000;
 			ui32 addr = stoi(s);
 			instruction = instruction | addr;
 			return instruction;

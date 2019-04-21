@@ -1,0 +1,70 @@
+Emir Erbasan (humanova) 2019
+
+CURRENT : 
+
+	header : 3 bits
+	data : 29 bits
+
+	header format :
+	100 : Primitive Instruction
+	011 : Addressing ([10] etc.)
+	010 : Negative Addressing ([-10] etc.)
+	110 : Register
+	111 : Symbol
+	000 : Positive Integer
+	001 : Negative Integer
+
+	reg			data	addr data
+	AX			0001	00f1
+	BX			0002	00f2
+	SP			0003	00f3
+	BP			0004	00f4
+	PC			0005
+
+	Bengi calling convention:
+
+	push arg2
+	push arg1
+	caller :	push arg	//	push function args
+				call func	//	(push PC on stack,push BP on stack, set PC to func address, set BP to BP address)
+				pop arg		//	remove arguments
+
+	callee :	push[-1]	//	get arg
+				mov ax [sp] //	set return value
+				pop			//	remove locals
+				ret			//	return (BP = old BP, pop, PC = old PC, pop)
+
+//======TODO======\\ 
+
+== Bengi Language & VM Instruction Format ==
+
+All instructions are 40 bits (5 bytes).
+First 8(Header) is Instruction Type, last 32 is Instruction Data.
+
+Headers
+1000 0000 : Primitive Instruction
+1100 0000 : Addressing ([10] etc.)
+1100 0001 : Negative Addressing ([-10] etc.)
+1001 0000 : Register
+1111 0000 : Symbol
+0000 0001 : Positive Integer
+0000 0011 : Negative Integer
+
+
+Registers:	Header		Data
+AX			1001 0000	.... 0001	
+BX			1001 0000	.... 0002		
+SP			1001 0000	.... 0003
+BP			1001 0000	.... 0004
+PC			1001 0000	.... 0005
+
+
+
+Sample instructions :
+
+Instruction Header	Data         
+PUSH		1000 0000	0000 0000 0000 0050  = PUSH
+PINT		0000 0001	0000 0000 0000 0050  = 80
+NINT        0000 0011	0000 0000 0000 0050  = -80
+SYMB        1111 0000	0000 0000 0000 1000  
+

@@ -1,31 +1,45 @@
-#include "VM.h"
-#pragma warning(disable : 4996)
 /*
+Emir Erbasan (humanova) 2019
+
 	Instruction Format
 
-	header : 2 bits (3 bits for registers)
-	data : 30 bits (29 bits for register data)
-	
-	header format :
-	0 (00) => positive integer
-	1 (01) => primitive instruction
-	2 (10) => negative integer
-	3 (11) => (111) register
-	4 (11) => (110) address
-	// 1 -> ax
-	// 2 -> sp
-	// 3 -> bp
-	// 4 -> pc
+	header : 3 bits
+	data : 29 bits
 
-	bengi calling convention:
+	header format :
+	100 : Primitive Instruction
+	011 : Addressing ([10] etc.)
+	010 : Negative Addressing ([-10] etc.)
+	110 : Register
+	111 : Symbol
+	000 : Positive Integer
+	001 : Negative Integer
+
+	reg			data
+	AX			0001
+	BX			0002
+	SP			0003
+	BP			0004
+	PC			0005
+
+	Bengi calling convention:
 
 	push arg2
 	push arg1
-	call func (push PC on stack, jmp func address)
-	add 
+	caller :	push arg	//	push function args
+				call func	//	(push PC on stack,push BP on stack, set PC to func address, set BP to BP address)
+				pop arg		//	remove arguments
 
-	
+	callee :	push[-1]	//	get arg
+				mov ax [sp] //	set return value
+				pop			//	remove locals
+				ret			//	return (BP = old BP, pop, PC = old PC, pop)
+
 */
+
+#include "VM.h"
+#pragma warning(disable : 4996)
+
 
 VM::VM()
 {
@@ -34,51 +48,78 @@ VM::VM()
 
 i32 VM::getType(ui32 instruction)
 {
-	ui32 type = 0xc0000000;
-	type = instruction & type;
-	if (type == 0xc0000000) {
-		type = type = (0xe0000000 & instruction) >> 29;
-		if (type == 7) return 3;
-		if (type == 6) return 4;
-		return type;
-	}
-	else
+	ui32 type = 0xe0000000;
+	type = (instruction & type) >> 29;
+	i32 data;
+	switch (type)
 	{
-		type = type >> 30;
-		return type;
+		// primitive inst
+		case 4:
+			type =  INST;
+			break;
+		case 0:
+			type = PINT;
+			break;
+		case 1:
+			type = NINT;
+			break;
+		case 3:
+			type = ADDR;
+			break;
+		case 2:
+			type = NADDR;
+			break;
+		case 6:
+			type = getRegType(instruction);
+			break;
+		case 7:
+			type = SYMB;
+			break;
+
+		default:
+			printf("bengivm error : [PC=%d] invalid instruction type", PC);
+			exit(1);
 	}
+	return type;
 }
 
 i32 VM::getData(ui32 instruction)
 {
+	ui32 buff = 0x1fffffff;
+	i32 data;
 	if (typ == PINT)
 	{
-		i32 data = 0x3fffffff;
-		data = data & instruction;
+		data = buff & instruction;
 		return data;
 	}
 	else if (typ == NINT)
 	{
-		i32 data = 0x3fffffff;
-		data = -1 * (data & instruction);
+		data = -1 * (buff & instruction);
 		return data;
 	}
 	else if (typ == INST)
 	{
-		i32 data = 0x3fffffff;
-		data = data & instruction;
+		data = buff & instruction;
 		return data;
 	}
 	else if (typ == REG) 
 	{
-		i32 data = 0x1fffffff;
-		data = data & instruction;
+		data = buff & instruction;
+		return data;
+	}
+	else if (typ == REGADDR)
+	{
+		data = buff & instruction;
 		return data;
 	}
 	else if (typ == ADDR)
 	{
-		i32 data = 0x3fffffff;
-		data = data & instruction;
+		data = buff & instruction;
+		return data;
+	}
+	else if (typ == NADDR)
+	{
+		data = -1 * (buff & instruction);
 		return data;
 	}
 	else if (typ == SYMB)
@@ -92,64 +133,83 @@ i32 VM::getData(ui32 instruction)
 	}
 }
 
-i32* VM::getAddress(i32 data)
+i32* VM::getRegisterAddress(i32 data)
 {
-	if (data == 0xffffff1)
+	if (data == 0xf1)
 	{
 		curr_addr = "[ax]";
 		return &Memory[AX];
 	}
-	else if (data == 0xffffff2)
+	else if (data == 0xf2)
 	{
 		curr_addr = "[bx]";
 		return &Memory[BX];
 	}
-	else if (data == 0xffffff3)
+	else if (data == 0xf3)
 	{
 		curr_addr = "[sp]";
 		return &Memory[SP];
 	}
-	else if (data == 0xffffff4)
+	else if (data == 0xf4)
 	{
 		curr_addr = "[bp]";
 		return &Memory[BP];
 	}
-	else
+}
+i32* VM::getAddress(i32 data)
+{
+
+	// Stack frame icindeysek negatif degerlerden 1 cikaricaz 
+	// orn : [-1] olan her NADDR [-2] olacak 
+	char buffer[33];
+	string data_str = string((char *)(itoa(data, buffer, 10)));
+	data_str = "[" + data_str + "]";
+	curr_addr = data_str;
+	if (BP != 0 && data < 0)
 	{
-		// Stack frame icindeysek negatif degerlerden 1 cikaricaz [-1] demek [-2] demek
-		char buffer[33];
-		string data_str = string((char *)(itoa(data, buffer, 10)));
-		data_str = "[" + data_str + "]";
-		curr_addr = data_str;
-		if (BP != 0 && data < 0)
-		{
-			data -= 1;
-		}
-		return &Memory[BP + data];
+		data -= 1;
 	}
+	return &Memory[BP + data];
+}
+
+i32 VM::getRegType(ui32 instruction)
+{
+	ui32 type = instruction & 0x1fffffff;
+	if (type >= 0xf1 && type <= 0xf4)
+		return REGADDR;
+	else return REG;
+
 }
 
 i32* VM::getRegister(i32 data)
 {
-	if (data == 0x01)
+	i32 type = getRegType(data);
+	if (type == REG)
 	{
-		return &AX;
+		if (data == 0x01)
+		{
+			return &AX;
+		}
+		else if (data == 0x02)
+		{
+			return &BX;
+		}
+		else if (data == 0x03)
+		{
+			return &SP;
+		}
+		else if (data == 0x04)
+		{
+			return &BP;
+		}
+		else if (data == 0x05)
+		{
+			return &PC;
+		}
 	}
-	if (data == 0x02)
+	else if (type == REGADDR)
 	{
-		return &BX;
-	}
-	else if (data == 0x03)
-	{
-		return &SP;
-	}
-	else if (data == 0x04)
-	{
-		return &BP;
-	}
-	else if (data == 0x05)
-	{
-		return &PC;
+		return getRegisterAddress(data);
 	}
 	else
 	{
@@ -192,7 +252,7 @@ vector<VM::Symbol> VM::GetSymbolTable(vector<ui32> instructions)
 	vector<VM::Symbol> symbols;
 	for (int i = 0; i < instructions.size(); i++)
 	{
-		if (instructions[i] == 0x40000090) // Func decleration
+		if (instructions[i] == 0x80000090) // Func decleration
 		{
 			Symbol symbol;
 			symbol.symbol = instructions[++i];
@@ -349,7 +409,14 @@ void VM::doPrimitive()
 			SP++;
 			Memory[SP] = *reg;
 		}
-		else if (typ == ADDR)
+		else if (typ == REGADDR)
+		{
+			i32* reg = getRegister(dat);
+			if (debug) cout << "push " << curr_addr.c_str() << endl;
+			SP++;
+			Memory[SP] = *reg;
+		}
+		else if (typ == ADDR || typ == NADDR)
 		{
 			i32* addr = getAddress(dat);
 			if (debug) cout << "push " << curr_addr.c_str() << endl;
@@ -366,6 +433,7 @@ void VM::doPrimitive()
 
 	case 0x51: // pop
 		SP--;
+		if (debug) cout << "pop" << endl;
 		break;
 
 	case 0x52: // load (mov ax, ?) 
@@ -382,7 +450,13 @@ void VM::doPrimitive()
 			if (debug) cout << "load " << getRegisterName(reg) << endl;
 			AX = *reg;
 		}
-		else if (typ == ADDR)
+		else if (typ == REGADDR)
+		{
+			i32* reg = getRegister(dat);
+			if (debug) cout << "load " << curr_addr.c_str()<< endl;
+			AX = *reg;
+		}
+		else if (typ == ADDR || typ == NADDR)
 		{
 			i32* addr = getAddress(dat);
 			if (debug) cout << "load " << curr_addr.c_str() << endl;
@@ -415,7 +489,14 @@ void VM::doPrimitive()
 				if (debug) cout << "mov " << getRegisterName(reg) << ", " << getRegisterName(src_reg) << endl;
 				*reg = *src_reg;
 			}
-			else if (src_type == ADDR)
+			else if (src_type == REGADDR)
+			{
+				
+				i32* src_reg = getRegister(src);
+				if (debug) cout << "mov " << getRegisterName(reg) << ", " << curr_addr.c_str() << endl;
+				*reg = *src_reg;
+			}
+			else if (src_type == ADDR || src_type == NADDR)
 			{
 				i32* src_addr = getAddress(src);
 				if (debug) cout << "mov " << getRegisterName(reg) << ", " << curr_addr.c_str() << endl;
@@ -428,25 +509,31 @@ void VM::doPrimitive()
 				exit(1);
 			}
 		}
-		else if (dest_type == ADDR)
+		else if (dest_type == ADDR || dest_type == NADDR)
 		{
 			i32* dest_addr = getAddress(dest);
+			string dest_name = curr_addr;
 			if (src_type == PINT || src_type == NINT)
 			{
-				if (debug) cout << "mov " << curr_addr.c_str() << ", " << src << endl;
+				if (debug) cout << "mov " << dest_name.c_str() << ", " << src << endl;
 				*dest_addr = src;
 			}
 			else if (src_type == REG)
 			{
 				i32* src_reg = getRegister(src);
-				if (debug) cout << "mov " << curr_addr.c_str() << ", " << src_reg << endl;
+				if (debug) cout << "mov " << dest_name.c_str() << ", " << src_reg << endl;
 				*dest_addr = *src_reg;
 			}
-			else if (src_type == ADDR)
+			else if (src_type == REGADDR)
 			{
-				string _dest_addr = curr_addr;
+				i32* src_reg = getRegister(src);
+				if (debug) cout << "mov " << dest_name.c_str() << ", " << curr_addr.c_str() << endl;
+				*dest_addr = *src_reg;
+			}
+			else if (src_type == ADDR || src_type == NADDR)
+			{
 				i32* src_addr = getAddress(src);
-				if (debug) cout << "mov " << _dest_addr.c_str() << ", " << curr_addr.c_str() << endl;
+				if (debug) cout << "mov " << dest_name.c_str() << ", " << curr_addr.c_str() << endl;
 				*dest_addr = *src_addr;
 			}
 			else
@@ -479,7 +566,13 @@ void VM::doPrimitive()
 			if (debug) cout << "jmp " << getRegisterName(dest_reg) << endl;
 			PC = *dest_reg - 1;
 		}
-		else if (typ == ADDR)
+		else if (typ == REGADDR)
+		{
+			i32* dest_reg = getRegister(dat);
+			if (debug) cout << "jmp " << curr_addr.c_str() << endl;
+			PC = *dest_reg - 1;
+		}
+		else if (typ == ADDR || typ == NADDR)
 		{
 			i32* dest_addr = getAddress(dat);
 			if (debug) cout << "jmp " << curr_addr.c_str() << endl;
@@ -508,7 +601,14 @@ void VM::doPrimitive()
 			if (Memory[SP] == 0) { PC = *dest_reg - 1; }
 				
 		}
-		else if (typ == ADDR)
+		else if (typ == REGADDR)
+		{
+			i32* dest_reg = getRegister(dat);
+			if (debug) cout << "jz " << curr_addr.c_str() << endl;
+			if (Memory[SP] == 0) { PC = *dest_reg - 1; }
+
+		}
+		else if (typ == ADDR || typ == NADDR)
 		{
 			i32 *dest_addr = getAddress(dat);
 			if (debug) cout << "jz " << curr_addr.c_str() << endl;
@@ -537,9 +637,14 @@ void VM::doPrimitive()
 			i32* dest_reg = getRegister(dat);
 			if (debug) cout << "jnz " << getRegisterName(dest_reg) << endl;
 			if (Memory[SP] != 0) { PC = *dest_reg - 1; }
-				
 		}
-		else if (typ == ADDR)
+		else if (typ == REG)
+		{
+			i32* dest_reg = getRegister(dat);
+			if (debug) cout << "jnz " << curr_addr.c_str() << endl;
+			if (Memory[SP] != 0) { PC = *dest_reg - 1; }
+		}
+		else if (typ == ADDR || typ == NADDR)
 		{
 			i32* dest_addr = getAddress(dat);
 			if (debug) cout << "jnz " << getRegisterName(dest_addr) << endl;
@@ -567,7 +672,13 @@ void VM::doPrimitive()
 			if (debug) cout << "cmp " << Memory[SP] << " " << getRegisterName(reg) << endl;
 			Memory[SP] = (Memory[SP] == *reg);
 		}
-		else if (typ == ADDR)
+		else if (typ == REGADDR)
+		{
+			i32* reg = getRegister(dat);
+			if (debug) cout << "cmp " << Memory[SP] << " " << curr_addr.c_str() << endl;
+			Memory[SP] = (Memory[SP] == *reg);
+		}
+		else if (typ == ADDR || typ == NADDR)
 		{
 			i32* addr = getAddress(dat);
 			if (debug) cout << "cmp " << Memory[SP] << " " << curr_addr.c_str() << endl;
@@ -581,8 +692,7 @@ void VM::doPrimitive()
 	//TODOS :
 	case 0x90:	// Function Decleration
 		fetch();
-		typ = SYMB;
-		getData(Memory[PC]);
+		decode();
 		break;
 
 	case 0x91: // Func Return
@@ -598,14 +708,13 @@ void VM::doPrimitive()
 	// BP = BP indis
 	case 0x92: 
 		fetch();
-		typ = SYMB;
+		decode();
 		//push PC
 		Memory[++SP] = PC + 1;
 		//push BP
 		Memory[++SP] = BP;
 
 		//set PC 
-		dat = getData(Memory[PC]);
 		Symbol symb = GetSymbol(dat);
 		PC = symb.address;
 		//set BP
@@ -617,20 +726,29 @@ void VM::doPrimitive()
 	}
 }
 
+void VM::PrintStack()
+{
+	printf("|| STACK ||\n");
+	for (i32 i = 0; i <= SP; i++)
+	{
+		printf("[%d] : %d\n", i, Memory[SP]);
+	}
+}
+
 i32 VM::run()
 {
 	//PC -= 1;
 	// Get main function address
-	PC = GetSymbol(0x10000000).address; 
+	PC = GetSymbol(0xE0000000).address;
 	
 	while (running)
 	{
-		printf("BengiVM[PC=%d] : \n", PC);
 		fetch();
 		decode();
 		execute();
 	}
-	cout << "tos : " << Memory[SP] << endl;
+	printf("tos : %d  SP : %d\n", Memory[SP], SP);
+	PrintStack();
 	return Memory[SP];
 }
 

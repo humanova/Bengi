@@ -1,3 +1,5 @@
+//Emir Erbasan (humanova) 2019
+
 #pragma once
 #include <iostream>
 #include <vector>
@@ -35,6 +37,8 @@ class VM
 	i32 getData(ui32 instruction);
 	i32* getRegister(i32 data);
 	i32* getAddress(i32 data);
+	i32 getRegType(ui32 instruction);
+	i32* getRegisterAddress(i32 data);
 	const char* getRegisterName(i32* reg);
 	vector<Symbol> GetSymbolTable(vector<ui32> instructions);
 	Symbol GetSymbol(i32 symbol_id);
@@ -44,14 +48,18 @@ class VM
 	void execute();
 	void doPrimitive();
 
+	
 	enum InstructionType
 	{
-		PINT, // positive integer
-		INST, // primitive instruction
-		NINT, // negative integer
-		REG,  // register
-		ADDR,  // address
-		SYMB
+		INST,	// prim. instruction
+		ADDR,	// address
+		NADDR,	// negative address
+		REG,	// register
+		REGADDR,// register address
+		SYMB,	// symbol
+		PINT,	// positive integer
+		NINT,	// negative integer
+		
 	};
 
 
@@ -63,6 +71,7 @@ public:
 	//void reset();
 	void loadProgram(vector<ui32> prog);
 	void loadBinary(string path);
+	void PrintStack();
 	bool debug = true;
 
 };
