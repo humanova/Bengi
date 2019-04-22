@@ -47,7 +47,6 @@ class VM
 	void decode();
 	void execute();
 	void doPrimitive();
-
 	
 	enum InstructionType
 	{
@@ -59,10 +58,7 @@ class VM
 		SYMB,	// symbol
 		PINT,	// positive integer
 		NINT,	// negative integer
-		
 	};
-
-
 
 public:
 	//public functions

@@ -300,6 +300,7 @@ void VM::execute()
 
 void VM::doPrimitive()
 {
+
 	switch (dat)
 	{
 	case 0x0: // halt
@@ -697,7 +698,7 @@ void VM::doPrimitive()
 
 	case 0x91: // Func Return
 		BP = Memory[SP--];
-		PC = Memory[SP--];
+		PC = Memory[SP--] - 1;
 		if (debug) printf("ret (%d)\n", PC);
 		break;
 
@@ -728,10 +729,11 @@ void VM::doPrimitive()
 
 void VM::PrintStack()
 {
-	printf("|| STACK ||\n");
+	printf("[%d] || STACK ||\n",PC);
+	printf("Regs : PC : %d, BP : %d, SP %d, AX : %d, BX : %d\n", PC, BP, SP, AX, BX);
 	for (i32 i = 0; i <= SP; i++)
 	{
-		printf("[%d] : %d\n", i, Memory[SP]);
+		printf("[%d] : %d\n", i, Memory[i]);
 	}
 }
 
@@ -748,7 +750,7 @@ i32 VM::run()
 		execute();
 	}
 	printf("tos : %d  SP : %d\n", Memory[SP], SP);
-	PrintStack();
+	//PrintStack();
 	return Memory[SP];
 }
 
