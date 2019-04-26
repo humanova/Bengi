@@ -4,12 +4,6 @@
 
 void ParseArg(int argc, char* argv[], IOFile &iofile)
 {
-	/*
-	for (int i = 0; i < argc; i++)
-	{
-		std::cout << argv[i] << std::endl;
-	}*/
-
 	if (argc < 2)
 	{
 		BengiError(Error::NO_INPUT_FILE);

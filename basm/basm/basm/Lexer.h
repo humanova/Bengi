@@ -1,6 +1,4 @@
 #pragma once
-#ifndef  LEXER_H
-#define LEXER_H
 
 #include <iostream>
 #include <string>
@@ -33,5 +31,3 @@ public:
 
 
 };
-
-#endif // ! LEXER_H

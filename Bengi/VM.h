@@ -5,6 +5,11 @@
 #include <vector>
 #include <fstream>
 
+#define MAIN_SYMBOL 0xE0000000 
+#define MEMORY_BUFFER 1000000
+
+#define DEBUG 0
+
 typedef int32_t i32;
 typedef uint32_t ui32;
 
@@ -40,8 +45,8 @@ class VM
 	i32 getRegType(ui32 instruction);
 	i32* getRegisterAddress(i32 data);
 	const char* getRegisterName(i32* reg);
-	vector<Symbol> GetSymbolTable(vector<ui32> instructions);
-	Symbol GetSymbol(i32 symbol_id);
+	Symbol getSymbol(i32 symbol_id);
+	vector<Symbol> SetSymbolTable(vector<ui32> instructions);
 
 	void fetch();
 	void decode();
@@ -64,11 +69,8 @@ public:
 	//public functions
 	VM();
 	i32 run();
-	//void reset();
-	void loadProgram(vector<ui32> prog);
-	void loadBinary(string path);
+	void LoadInstructions(vector<ui32> prog);
+	void LoadBinary(string path);
 	void PrintStack();
-	bool debug = true;
-
 };
 

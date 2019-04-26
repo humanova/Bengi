@@ -8,17 +8,17 @@ typedef uint32_t ui32;
 using namespace std;
 
 // functions
-vector<ui32> compileToInstructions(strings s);
-bool isInteger(string s);
-//bool isPrimitive(string s);
-bool isAddress(string s);
-bool isFunction(string s);
-bool isNegative(string s);
+vector<ui32> Compile(strings s);
+bool DefineMain();
+bool CheckDefined(string func_name);
 ui32 mapToNumber(string s);
 ui32 mapToSymbol(string s);
 ui32 GetSymbol(string name);
-bool CheckDefined(string func_name);
-bool DefineMain();
+
+bool isInteger(string s);
+bool isAddress(string s);
+bool isFunction(string s);
+bool isNegative(string s);
 
 struct Symbol 
 {
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 
 	//compile to binary
 	DefineMain();
-	vector<ui32> instructions = compileToInstructions(lexemes);
+	vector<ui32> instructions = Compile(lexemes);
 	
 	// write to a bin file
 	ofstream ofile;
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-vector<ui32> compileToInstructions(strings s)
+vector<ui32> Compile(strings s)
 {
 	vector<ui32> instructions;
 	for (ui32 i = 0; i < s.size(); i++)

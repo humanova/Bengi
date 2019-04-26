@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 	ParseArg(argc, argv, iofile);
 
 	VM BengiVM;
-	BengiVM.loadBinary(iofile.sourcePath);
+	BengiVM.LoadBinary(iofile.sourcePath);
 	i32 result = BengiVM.run();
 
 	return result;
