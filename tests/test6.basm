@@ -1,0 +1,9 @@
+//; function calling test 1
+.test:
+    load 10
+    ret
+
+.main:
+    call test
+    push ax
+    end

@@ -1,0 +1,37 @@
+//; fibonacci sequence, bengi-asm
+.fibonacci:
+    mov bx 24   //; loop stop variable
+    push 2      //; loop var
+    mov ax 1
+    push 1
+                //; loop start
+    push ax
+    add
+    push [sp]
+    push ax
+    sub 
+    mov ax [sp]
+    pop
+                //; loop var += 1
+    push [1]
+    push 1
+    add
+                //; copy loop var
+    mov [1] [sp]
+                //; check if loop var == loop stop var
+    push bx      
+    eq
+    jz 1012     //; jump to loop start instruction (push ax)
+                //; and pop stack
+                //; loop end
+
+    mov ax [sp]
+    pop
+    pop
+    ret
+
+.main:
+    call fibonacci
+    push ax
+    end
+
