@@ -75,6 +75,7 @@ void IOFile::s_LoadSource(std::string s_sourcePath, std::ofstream &file)
 		exit(-1);
 	}
 	this->s_sourcePath = s_sourcePath;
+	file.close();
 }
 
 //Overload 1 - load the source from s_sourcePath and open with class variable "file" 
@@ -88,6 +89,7 @@ void IOFile::s_LoadSource(std::string s_sourcePath)
 		exit(-1);
 	}
 	this->s_sourcePath = s_sourcePath;
+	s_sourceFile.close();
 }
 
 //Overload - load the source from s_sourcePath (class variable) and open with class variable "file"
@@ -100,6 +102,7 @@ void IOFile::s_LoadSource()
 		BengiError(Error::INPUT_FILE_NOT_FOUND);
 		exit(-1);
 	}
+	s_sourceFile.close();
 }
 
 bool IOFile::isSourceSet()
@@ -124,6 +127,17 @@ bool IOFile::isOutputSet()
 	{
 		return false;
 	}
+}
+
+bool IOFile::checkSource()
+{
+	sourceFile = fopen(sourcePath, "r");
+	if (sourceFile == NULL)
+	{
+		BengiError(Error::INPUT_FILE_NOT_FOUND);
+		exit(-1);
+	}
+	return true;
 }
 
 //Returns true if s_sourcePath is set

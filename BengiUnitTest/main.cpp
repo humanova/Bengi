@@ -8,15 +8,17 @@ vector<string> test
 	testFolder + "test2.cben",
 	testFolder + "test3.cben",
 	testFolder + "test4.cben",
-	testFolder + "test5.cben"
+	testFolder + "test5.cben",
+	testFolder + "test6.cben"
 };
 vector<i32> testResult
 {
 	40,
-	10,
+	60,
 	11,
-	55,
-	100
+	46368,
+	100,
+	10
 };
 
 TEST_CASE("Arithmetic and Logical operations " "[ALO]")
@@ -49,5 +51,13 @@ TEST_CASE("Arithmetic-Conditinonal operations", "[ACO]")
 	{
 		VM vm; vm.LoadBinary(test[4]);
 		REQUIRE(vm.run() == testResult[4]);
+	}
+}
+
+TEST_CASE("Function operations", "[FO]")
+{
+	{
+		VM vm; vm.LoadBinary(test[5]);
+		REQUIRE(vm.run() == testResult[5]);
 	}
 }

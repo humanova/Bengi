@@ -122,6 +122,7 @@
     <ClCompile Include="IOFile.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Usage.cpp" />
+    <ClCompile Include="Version.cpp" />
     <ClCompile Include="VM.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +130,7 @@
     <ClInclude Include="Error.h" />
     <ClInclude Include="IOFile.h" />
     <ClInclude Include="Usage.h" />
+    <ClInclude Include="Version.h" />
     <ClInclude Include="VM.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

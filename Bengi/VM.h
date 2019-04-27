@@ -68,6 +68,7 @@ class VM
 public:
 	//public functions
 	VM();
+	~VM();
 	i32 run();
 	void LoadInstructions(vector<ui32> prog);
 	void LoadBinary(string path);

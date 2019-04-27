@@ -1,4 +1,5 @@
 #include "Usage.h"
+#include "Version.h"
 
 void PrintUsage()
 {
@@ -15,7 +16,8 @@ void PrintUsage()
 
 void PrintVersion()
 {
-	std::cerr << "bengi (Bengi Language Interpreter) 0.1.0\n"
-		<< "Copyright (C) 2018 Emir Erbasan"
+	std::cerr << "bengi (Bengi Language Virtual Machine) "
+		<< s_GetVersion() << "\n"
+		<< "Copyright (C) 2019 Emir Erbasan"
 		<< std::endl;
 }

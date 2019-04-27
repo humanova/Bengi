@@ -26,7 +26,8 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 		else
 		{
 			iofile.sourcePath = argv[1];
-			return;
+			if(iofile.checkSource())
+				return;
 		}
 	}
 	else
@@ -53,7 +54,9 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 					exit(-1);
 				}
 				iofile.sourcePath = argv[i + 1];
-				i++;
+
+				if(iofile.checkSource())
+					i++;
 			}
 
 			else if (!strcmp(argv[i], "-o") || !strcmp(argv[i], "--output"))
@@ -100,6 +103,7 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 					else
 					{
 						iofile.sourcePath = argv[i + 1];
+						iofile.checkSource();
 					}
 				}
 				else

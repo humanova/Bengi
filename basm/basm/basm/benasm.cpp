@@ -1,3 +1,4 @@
+//Emir Erbasan (humanova) 2019
 #pragma warning(disable : 4996)
 #include <iostream>
 #include <fstream>
@@ -229,6 +230,7 @@ bool isNegative(string s)
 	}
 	return false;
 }
+
 bool CheckDefined(string func_name)
 {
 	for (int i = 0; i < SymbolTable.size(); i++)

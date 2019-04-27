@@ -24,10 +24,8 @@ Emir Erbasan (humanova) 2019
 
 	Bengi calling convention:
 
-	push arg2
-	push arg1
 	caller :	push arg	//	push function args
-				call func	//	(push PC on stack,push BP on stack, set PC to func address, set BP to BP address)
+				call func	//	(push PC on stack, push BP on stack, set PC to func address, set BP to BP address)
 				pop arg		//	remove arguments
 
 	callee :	push[-1]	//	get arg
@@ -43,6 +41,10 @@ Emir Erbasan (humanova) 2019
 VM::VM()
 {
 	Memory.resize(MEMORY_BUFFER);
+}
+
+VM::~VM()
+{
 }
 
 i32 VM::getType(ui32 instruction)
@@ -529,13 +531,22 @@ void VM::doPrimitive()
 		i32 src_type = typ;
 		i32 src = dat;
 
-		if (dest_type == REG)
+		if (dest_type == REG || dest_type == REGADDR)
 		{
-			i32 * reg = getRegister(dest);
+			i32 *reg = getRegister(dest);
+
+			#if DEBUG
+			const char* dest_reg_name;
+			if (dest_type == REG)
+				dest_reg_name = getRegisterName(reg);
+			else
+				dest_reg_name = curr_addr.c_str();;
+			#endif
+
 			if (src_type == PINT || src_type == NINT)
 			{
 				#if DEBUG
-					cout << "mov " << getRegisterName(reg) << ", " << src << endl;
+					cout << "mov " << dest_reg_name << ", " << src << endl;
 				#endif
 				*reg = dat;
 			}
@@ -543,7 +554,7 @@ void VM::doPrimitive()
 			{
 				i32* src_reg = getRegister(src);
 				#if DEBUG
-					cout << "mov " << getRegisterName(reg) << ", " << getRegisterName(src_reg) << endl;
+					cout << "mov " << dest_reg_name << ", " << getRegisterName(src_reg) << endl;
 				#endif
 				*reg = *src_reg;
 			}
@@ -552,7 +563,7 @@ void VM::doPrimitive()
 				
 				i32* src_reg = getRegister(src);
 				#if DEBUG
-					cout << "mov " << getRegisterName(reg) << ", " << curr_addr.c_str() << endl;
+					cout << "mov " << dest_reg_name << ", " << curr_addr.c_str() << endl;
 				#endif
 				*reg = *src_reg;
 			}
@@ -560,7 +571,7 @@ void VM::doPrimitive()
 			{
 				i32* src_addr = getAddress(src);
 				#if DEBUG
-					cout << "mov " << getRegisterName(reg) << ", " << curr_addr.c_str() << endl;
+					cout << "mov " << dest_reg_name << ", " << curr_addr.c_str() << endl;
 				#endif
 				*reg = *src_addr;
 				
@@ -621,7 +632,7 @@ void VM::doPrimitive()
 		}
 		break;
 		
-	case 0x54: // jump
+	case 0x54: // jmp
 		fetch();
 		decode();
 		{

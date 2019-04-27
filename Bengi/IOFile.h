@@ -34,6 +34,7 @@ public:
 	bool isSourceSet();
 	bool isOutputSet();
 
+	bool checkSource();
 	bool s_isSourceSet(); 
 	bool s_isOutputSet();
 

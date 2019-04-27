@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "CppUnitTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -11,15 +11,18 @@ vector<string> test
 	testFolder + "test2.cben",
 	testFolder + "test3.cben",
 	testFolder + "test4.cben",
-	testFolder + "test5.cben"
+	testFolder + "test5.cben",
+	testFolder + "test6.cben"
+	
 };
 vector<i32> testResult
 {
 	40,
-	10,
+	60,
 	11,
-	55,
-	100
+	46368,
+	100,
+	10
 };
 
 namespace BengiTest
@@ -32,7 +35,7 @@ namespace BengiTest
 		{
 			VM testVM;
 			
-			testVM.loadBinary(test[0]);
+			testVM.LoadBinary(test[0]);
 			i32 result = testVM.run();
 			Assert::AreEqual(testResult[0], result);
 		}
@@ -46,14 +49,14 @@ namespace BengiTest
 		TEST_METHOD(Test1)
 		{
 			VM testVM;
-			testVM.loadBinary(test[1]);
+			testVM.LoadBinary(test[1]);
 			Assert::AreEqual(testResult[1], testVM.run());
 		}
 
 		TEST_METHOD(Test2)
 		{
 			VM testVM;
-			testVM.loadBinary(test[2]);
+			testVM.LoadBinary(test[2]);
 			Assert::AreEqual(testResult[2], testVM.run());
 		}
 	};
@@ -65,15 +68,27 @@ namespace BengiTest
 		TEST_METHOD(Test1)
 		{
 			VM testVM;
-			testVM.loadBinary(test[3]);
+			testVM.LoadBinary(test[3]);
 			Assert::AreEqual(testResult[3], testVM.run());
 		}
 
 		TEST_METHOD(Test2)
 		{
 			VM testVM;
-			testVM.loadBinary(test[4]);
+			testVM.LoadBinary(test[4]);
 			Assert::AreEqual(testResult[4], testVM.run());
+		}
+	};
+
+	TEST_CLASS(Function)
+	{
+	public:
+
+		TEST_METHOD(Test1)
+		{
+			VM testVM;
+			testVM.LoadBinary(test[5]);
+			Assert::AreEqual(testResult[5], testVM.run());
 		}
 	};
 }

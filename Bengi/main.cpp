@@ -1,4 +1,4 @@
-//Emir Erbasan 2018-19
+//Emir Erbasan (humanova) 2019
 
 #include "ArgParser.h"
 #include "VM.h"
