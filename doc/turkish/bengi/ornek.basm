@@ -1,0 +1,22 @@
+.func:
+    push [-1]
+    push bx
+    add
+    mov ax [sp]
+    pop
+    ret
+
+.main:
+    push 2
+    push 16
+    push -5
+    add
+    mul
+    mov bx [sp]
+
+    push -18
+    call func
+    push ax
+    end
+
+

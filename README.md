@@ -1,10 +1,11 @@
 # BengiVM - BengiASM Project
 
 Stack Virtual Machine based programming language project.
+![Turkish blog post about this project](https://humanova.github.io/humanova/post/bengi)
 
 ## BASM Fibonacci Example
 
-(Note : On both implementations: iterative way is used to find fibonacci(n).)
+(Note : On both implementations: iterative algorithm is used to get fibonacci(n).)
 ### C Implementation
 
 ```c
@@ -74,6 +75,8 @@ int main()
     push ax		//; push function return value
     end			//; end program
 ```
+
+## Usage
 
 Use `bengi -c fib.basm` or `basm fib.basm` to compile `fib.basm` file. Bengi Assembler finds function declerations and symbolizes them. So that we can call our already-declared functions.
 
