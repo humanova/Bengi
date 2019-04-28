@@ -1,6 +1,6 @@
 # BengiVM - BengiASM Project
 
-My Stack Virtual Machine based programming language project.
+Stack Virtual Machine based programming language project.
 
 ## Example program
 ---
@@ -163,8 +163,3 @@ int main()
     push ax		//; push function return value
     end			//; end program
 ```
-
-
-
-
-
