@@ -92,15 +92,6 @@ tos : 6765  SP : 1
 
 BengiVM loads the program, runs it on VM and returns `6765` which is 20th number of fibonacci.
 
-## BASM Instruction Set
-
-11 primitive, 16 arithmetic instructions.
-
-5 VM Registers.
-
-![InstructionSet](_img/instruction_set.png)
-
-
 ## BASM Instruction Format
 ```text
 
@@ -125,6 +116,15 @@ BP			0004
 PC			0005
 ```
 
+## BASM Instruction Set
+
+11 primitive, 16 arithmetic instructions.
+
+5 VM Registers.
+
+![InstructionSet](_img/instruction_set.png)
+
+
 ## Registers
 ---
 
@@ -143,7 +143,7 @@ Bengi Calling Convention, is complete rule of calling any function. Bengi Callin
 Calling Convention Pseudocode:
 ```assembly
 caller :
-    push arg	        //	    push function arguments
+    push arg	        //      push function arguments
     call func	        //	(push PC, push BP, PC = func address, BP = new BP)
     pop arg	        //	delete function arguments
 
