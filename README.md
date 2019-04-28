@@ -1,7 +1,8 @@
 # BengiVM - BengiASM Project
 
 Stack Virtual Machine based programming language project.
-![Turkish blog post about this project](https://humanova.github.io/humanova/post/bengi)
+
+[Turkish blog post about this project](https://humanova.github.io/humanova/post/bengi)
 
 ## BASM Fibonacci Example
 
