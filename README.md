@@ -3,7 +3,6 @@
 Stack Virtual Machine based programming language project.
 
 ## Example program
----
 ![ornek_program](_img/ornek_basm.JPG)
 
 Use `bengi -c ornek.basm` or `basm ornek.basm` to compile this `ornek.basm`. Bengi Assembler finds function declerations and symbolizes them. So that we can call our declared functions.
@@ -24,7 +23,6 @@ tos : 4  SP : 3
 BengiVM loads the program, runs it and returns `4`.
 
 ## BASM Instruction Set
----
 
 BASM Instruction Set:
 11 primitive, 16 arithmetic instructions.
@@ -34,7 +32,6 @@ BASM Instruction Set:
 
 
 ## BASM Instruction Format
----
 ```text
 
 32 bit instructions
@@ -71,7 +68,6 @@ PC			0005
 
 
 ## Bengi Calling Convention
----
 Bengi Calling Convention, is complete rule of calling any function. Bengi Calling Convention works similar to _`__stdcall`_. Every function argument is pushed on the stack.
 
 Calling Convention Pseudocode:
@@ -91,7 +87,6 @@ callee :
 
 
 ## BASM Fibonacci Example
----
 
 (Note : On both implementations: i used iterative way to find fibonacci(n).)
 ### C Implementation
