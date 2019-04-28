@@ -1,3 +1,5 @@
+// I learned and get this lexer implementation from Philip Bohun's stack-vm-tutorials github repo
+
 #include "Lexer.h"
 
 strings Lexer::lex(string s)
@@ -93,7 +95,6 @@ strings Lexer::lex(string s)
 			}
 			else if (end_char == '"' && s[i] == '\\')
 			{
-				// TODO: karakterleri kaydet
 				i += 2;
 			}
 			else

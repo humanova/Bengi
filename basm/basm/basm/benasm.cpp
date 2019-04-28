@@ -4,6 +4,8 @@
 #include <fstream>
 #include "Lexer.h"
 
+#define  MAIN_SYMBOL 0xE0000000
+
 typedef uint32_t ui32;
 
 using namespace std;
@@ -250,7 +252,7 @@ bool DefineMain()
 {
 	Symbol symbol;
 	symbol.name = "main";
-	symbol.symbol = 0xE0000000;
+	symbol.symbol = MAIN_SYMBOL;
 	SymbolTable.push_back(symbol);
 }
 

@@ -45,7 +45,12 @@ def RunTests():
 
 if __name__ == "__main__":
     
-    if not len(sys.argv) == 0:
+    if not len(sys.argv) < 2:
         if sys.argv[1] == '-t' or sys.argv[1] == '--test':
             res = RunTests()
             print(f"{res[0]}/{res[1]} tests passed...")
+
+        else:
+            exit()
+    else:
+        exit()

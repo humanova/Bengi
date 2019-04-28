@@ -71,6 +71,7 @@ i32 VM::getType(ui32 instruction)
 			type = NADDR;
 			break;
 		case 6:
+			// Check if its REG or REGADDR
 			type = getRegType(instruction);
 			break;
 		case 7:

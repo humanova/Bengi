@@ -7,7 +7,7 @@ void ParseArg(int argc, char* argv[], IOFile &iofile)
 	if (argc < 2)
 	{
 		BengiError(Error::NO_INPUT_FILE);
-		PrintUsage();
+		//PrintUsage();
 		exit(-1);
 	}
 
