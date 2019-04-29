@@ -37,13 +37,13 @@ Ve ortaya **BASM** ve **BengiVM** çıktı.
 
 ## Ne yaptım?
 ---
-**C++** ile, bir _Stack VM_ ve bu _VM_ üzerinde çalışacak instructionları derleyen bir **Assembler** yazdım. 
+**C++** ile, bir _Stack VM_ ve bu _VM_ üzerinde çalışacak instructionları derleyen bir **Assembler** yazdım. Yani kendi **mimarimi** ve bunun üzerinde çalışan kendi **düşük seviye dilimi** yazdım denilebilir. Bu dilin 7 farklı tipte 27 tane komutu(instruction), 5 tane **sanal makine registerı**, **sembol sistemi** ve kendi **fonksiyon çağırma düzeni**(Bengi Calling Convention) var. 
 
 **Bengi Assembler**: _`.basm`_ uzantılı ve içerisinde kendi Assembly'sinin olduğu metin dosyalarını okuyor ve her biri 32 bit olan instructionlara dönüşütürüyor. Ardından _`.cben`_ uzantılı bir binary dosyasına, bu 32 bit instructionları sırayla yazıyor. Bytecode'umuzu üreten program diyebiliriz.
 
-**Bengi Assembly(BASM)**: Assembler'ın okuduğu metin dosyasındaki sanal makine Assembly'miz. `X86 Assembly` instructionlarına benzer instruction setine sahip. Ve temel(primitive) instruction'ların neredeyse hepsini içeriyor.
+**Bengi Assembly(BASM)**: Assembler'ın okuduğu metin dosyasındaki sanal makine Assembly'miz. `X86 Assembly` instructionlarına benzer instruction setine sahip. Ve temel(primitive) instruction'ların bir kısmını içeriyor.
 
-**Bengi Virtual Machine(BengiVM)**: Assembler tarafından derlenmiş _`.cben`_ uzantılı dosyadan intructionları okur ve çalıştırır. VM instructionları sırayla okur ancak sırayla çalıştırmaz. Önce _`main`_ sembolünün adresini bulur ve instructionları çalıştırmaya bu adresden başlar. 
+**Bengi Virtual Machine(BengiVM)**: Assembler tarafından derlenmiş _`.cben`_ uzantılı dosyadan instructionları okur ve çalıştırır. VM instructionları sırayla okur ancak sırayla çalıştırmaz. Önce _`main`_ sembolünün adresini bulur ve instructionları çalıştırmaya bu adresden başlar. 
 
 **BengiDLL**: Bengi Virtual Machine fonksiyonlarını çağırabilen basit bir _**dynamic library**_. Bu library'yi kullanarak _`.cben`_ dosyalarını sanal makinede çalıştırıp sonuçlarını döndürmek mümkün. _Python_ _`ctypes`_ modülü ile `bengi.dll`'i import edip, Bengi Unit Testlerin hepsini tek bir python scripti ile çalıştırabiliyorum.  
 
@@ -53,7 +53,7 @@ Yani toparlayacak olursak: Bengi Assembly yazılan kodları Assembler ile byteco
 ## Ne yapacağım?
 ---
 
-Bengi Virtual Machine ve Bengi Assembly'yi geliştirmeye devam edip, aynı zamanda bu iki yapıtaşı üzerine kurulu bir **high level programlama dili** geliştirmek istiyorum. Bunun için biraz daha yolum var. Oluşturmak istediğim Bengi dilini kendimin de aktif bir şekilde kullandığı bir dil olmasını istiyorum. Bu nedenle sağlam temeller üzerinde bu dili oluşturmanın çok daha sağlıklı olacağını düşünüyorum. Şuanlık amacım BengiASM'i **üzerine konulabilir** şekilde, daha da geliştirmek.   
+Bengi Virtual Machine ve Bengi Assembly'yi geliştirmeye devam edip, aynı zamanda bu iki yapıtaşı üzerine kurulu bir **high level programlama dili** geliştirmek istiyorum. Bunun için biraz daha yolum var. Oluşturmak istediğim Bengi dilini kendimin de aktif bir şekilde kullandığı bir dil olmasını istiyorum. Bu nedenle sağlam temeller üzerinde bu dili oluşturmanın çok daha sağlıklı olacağını düşünüyorum. Şu anlık amacım BengiASM'i **üzerine konulabilir** şekilde, daha da geliştirmek.   
 
 ![Bloklar](bengi/bengi_blook.png)
 
@@ -131,15 +131,25 @@ Not: BASM'deki fonksiyon tanımlama yazımı(`.fonk:`), gerçek Assembly dilleri
 
 BASM'de fonksiyonlar **.**`fonksiyon-adi`**:** şeklinde tanımlanır ve program derlenirken her fonksiyona özel bir sembol üretilir. Her yeni tanımlanan sembol, sembol tablosu denen vektöre ismi ile birlikte(fonksiyon ismi) itilir ve kaydedilir. 
 
-Sembol tablosunun ilk elemanı her zaman _`main`_ fonksiyonudur ve sembolü daima _`0xE0000000`_'dir. Her program _`main`_ fonksiyonu barındırmak zorundadır. Assembler _main_ tanımlaması göremezse derleme işlemini bitirir.
+Sembol tablosunun ilk elemanı her zaman _`main`_ fonksiyonudur ve sembolü daima _`0xE0000000`_'dir. Her program _`main`_ fonksiyonu barındırmak zorundadır. Assembler _main_ tanımlaması göremezse derleme işlemini bitirir. 
 
-Eğer bu tanımlanmış fonksiyonlardan biri dosyada tekrar tanımlanırsa BASM hata verir ve program derlenemez. 
+Eğer tanımlanmış fonksiyonlardan biri dosyada tekrar tanımlanırsa BASM hata verir ve program derlenemez. 
+
+`main` fonksiyonu dışında tanımlanan her fonksiyonun sembol tablosundaki sembol değeri, **tabloda kendisinden önce tanımlanmış** fonksiyonun sembol değerinin `0x10` fazlasıdır. Yani `main` dahil olmak üzere 3 adet fonksiyonu bulunan bir programda tablodaki semboller şu şekilde gözükmeli:
+```text 
+func_name   symbol
+main    :   0xE0000000 
+fonk_2  :   0xE0000010 
+fonk_3  :   0xE0000020
+```
 
 Önceden tanımlanmış bir fonksiyon tekrar tanımlanmadan, ismi dosyada kullanılırsa("_`call fonksiyon`_" gibi), isminin geçtiği adrese sembol değeri yazılır.(Bu şekilde binary'ye derlenir.)
 
-Fonksiyon tanımlamalarının yapıldığı yerler "_`func`_ `symbol`" instruction formatında binary'ye çevirilir. (_`func`_ kullanıcının değil, assembler'ın kullanabildiği özel bir instructiondır. "`.basm` dosyası" üzerindeki sembolleri işaretlemek için kullanılır)
+Fonksiyon tanımlamalarının yapıldığı yerler "_`func`_ `symbol`" instruction formatında binary'ye çevirilir. (_`func`_ kullanıcının değil, assembler'ın kullanabildiği özel bir instructiondır. Derlenmiş program(`.cben`) üzerindeki sembolleri işaretlemek için kullanılır.)
 
 ![symbol](bengi/symbol2.png)
+
+Yukarıdaki görselde de görebildiğiniz gibi, `call` instructionı ile fonksiyon çağırılırken, fonksiyonun adresine Assembler tarafından verilen sembolünü kullanarak erişildi. 
 
 Bengi Virtual Machine binary dosyasını okurken ilk yaptığı şey tüm dosya üzerinde **sembol** aramaktır. Bunu yaparken _`func`_ instructionlarını bulur ve bulduğu her _`func`_ instructionının ardından gelen instructionı **sembol tablosuna**, sembolün adresi ile birlikte kaydeder. 
 
@@ -276,13 +286,38 @@ Ve programımız _end_ ile bitiriliyor.
 Program sonunda _`tos : 4  SP : 3`_ şeklinde bir çıktıyla karşılaşıyoruz.
 
 `tos`: Top of the stack demek. Program bitirildiği sırada stackteki son elemanın değerini bize gösteriyor. 
-
 `SP` ise son elemanın stackteki konumunu gösteriyor.
+
+### Bu programı `bengi_dbg` ile `debug` modunda çalıştırdığımızda, instructionların hangi sırada işlediğine ve hangi değerlerle işlem yaptıklarına dair bilgileri görebiliyoruz. Şöyle bir çıktı alıyoruz:
+
+```text
+$ bengi_dbg ornek.cben
+instructions : 32
+Func symbol found : address -> 1001 | symbol - > e0000010
+Func symbol found : address -> 1013 | symbol - > e0000000
+push 2
+push 16
+push -5
+add 16 -5
+mul 2 11
+mov bx, [sp]
+push -18
+call e0000010 (1001)
+push [-1]
+push bx
+add -18 22
+mov ax, [sp]
+pop
+ret (1028)
+push ax
+end
+tos : 4  SP : 3
+```
 
 ## BASM Fibonacci Örneği
 ---
 Uygulaması görece daha zor olan bir örnek oluşturmak istedim. Aklıma gelen ilk şey, _fibonacci_'nin n. elemanını döndüren bir fonksiyon oluşturmak oldu. 
-Bu fonksiyonun hem C hem de BASM implementasyonlarını aşağıda inceleyebilirsiniz.
+Bu fonksiyonun hem `C` hem de `BASM` implementasyonlarını aşağıda inceleyebilirsiniz.
 
 (Not : İki örnek de iterative şekilde _fibonacci_'yi hesaplıyor.)
 ### C Implementasyonu
