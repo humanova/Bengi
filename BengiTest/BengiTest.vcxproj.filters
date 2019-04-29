@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="targetver.h">
+    <ClInclude Include="..\Bengi\VM.h">
       <Filter>Başlık Dosyaları</Filter>
     </ClInclude>
-    <ClInclude Include="..\Bengi\VM.h">
+    <ClInclude Include="targetver.h">
       <Filter>Başlık Dosyaları</Filter>
     </ClInclude>
   </ItemGroup>

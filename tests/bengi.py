@@ -1,3 +1,6 @@
+# 2019 Emir Erbasan(humanova)
+# GPL v2 License, see LICENSE for more details
+
 from ctypes import CDLL, create_string_buffer
 import sys
 

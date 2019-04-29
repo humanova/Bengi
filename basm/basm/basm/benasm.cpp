@@ -1,4 +1,6 @@
-//Emir Erbasan (humanova) 2019
+// 2019 Emir Erbasan(humanova)
+// GPL v2 License, see LICENSE for more details
+
 #pragma warning(disable : 4996)
 #include <iostream>
 #include <fstream>

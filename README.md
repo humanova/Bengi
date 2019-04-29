@@ -147,15 +147,15 @@ Bengi Calling Convention, is complete rule of calling any function. Bengi Callin
 Calling Convention Pseudocode:
 ```assembly
 caller :
-    push arg	        //      push function arguments
-    call func	        //	(push PC, push BP, PC = func address, BP = new BP)
-    pop arg	        //	delete function arguments
+    push arg	        //;     push function arguments
+    call func	        //;	(push PC, push BP, PC = func address, BP = new BP)
+    pop arg	        //;	delete function arguments
 
 callee :
-    push[-1]		//	get last pushed value (argument)
-    mov ax [sp] 	//	store return value on AX
-    pop			//	remove locals(if there's any)
-    ret			//	return (BP = old BP, pop, PC = old PC, pop)
+    push[-1]		//;	get last pushed value (argument)
+    mov ax [sp] 	//;	store return value on AX
+    pop			//;	remove locals(if there's any)
+    ret			//;	return (BP = old BP, pop, PC = old PC, pop)
 ```
 
 

@@ -1,4 +1,5 @@
-﻿//Emir Erbasan (humanova) 2019
+﻿// 2019 Emir Erbasan(humanova)
+// GPL v2 License, see LICENSE for more details
 
 #include "../Bengi/VM.h"
 #include "../Bengi/IOFile.h"

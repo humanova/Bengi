@@ -1,4 +1,6 @@
-// I learned and get this lexer implementation from Philip Bohun's stack-vm-tutorials github repo
+// 2019 Emir Erbasan(humanova)
+// GPL v2 License, see LICENSE for more details
+// Note : I learned and get this lexer implementation from Philip Bohun's stack-vm-tutorials github repo.
 
 #include "Lexer.h"
 
