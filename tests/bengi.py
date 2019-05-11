@@ -1,12 +1,24 @@
 # 2019 Emir Erbasan(humanova)
 # GPL v2 License, see LICENSE for more details
 
-from ctypes import CDLL, create_string_buffer
+# test results
+results = {
+    1 : 40,
+    2 : 60,
+    3 : 11,
+    4 : 46368,
+    5 : 100,
+    6 : 10,
+}
+
+from ctypes import CDLL, create_string_buffer, RTLD_GLOBAL
 import sys
 
 def LoadDLL():
-
-    Bengi = CDLL('bengi.dll')
+    if sys.platform == "win32":
+        Bengi = CDLL('bengi.dll')
+    else:
+        Bengi = CDLL('bengi.so', mode=RTLD_GLOBAL)
     return Bengi
 
 def RunCBEN(path):
@@ -22,15 +34,6 @@ def RunCBEN(path):
         print("Error while loading .cben file...")
         del Bengi
         return None
-
-results = {
-    1 : 40,
-    2 : 60,
-    3 : 11,
-    4 : 46368,
-    5 : 100,
-    6 : 10,
-}
 
 def RunTests():
 

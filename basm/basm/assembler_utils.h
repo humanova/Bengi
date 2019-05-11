@@ -1,29 +1,9 @@
-// 2019 Emir Erbasan(humanova)
-// GPL v2 License, see LICENSE for more details
-
-#pragma warning(disable : 4996)
 #include <iostream>
-#include <fstream>
 #include "Lexer.h"
-
-#define  MAIN_SYMBOL 0xE0000000
 
 typedef uint32_t ui32;
 
-using namespace std;
-
-// functions
-vector<ui32> Compile(strings s);
-bool DefineMain();
-bool CheckDefined(string func_name);
-ui32 mapToNumber(string s);
-ui32 mapToSymbol(string s);
-ui32 GetSymbol(string name);
-
-bool isInteger(string s);
-bool isAddress(string s);
-bool isFunction(string s);
-bool isNegative(string s);
+#define  MAIN_SYMBOL 0xE0000000
 
 struct Symbol 
 {
@@ -34,58 +14,19 @@ struct Symbol
 vector<Symbol> SymbolTable;
 bool isMainDefined = false;
 
-int main(int argc, char *argv[])
-{
-	if (argc != 2)
-	{
-		cout << "Usage: " << argv[0] << " <basm-file>" << endl;
-		exit(1);
-	}
-	
-	//read input file
-	ifstream input_file;
-	input_file.open(argv[1]);
-	if (!input_file.is_open())
-	{
-		cout << "basm error : could not open [" << argv[1] << "]" << endl;
-		exit(1);
-	}
+// function decl.
+vector<ui32> Compile(strings s);
+void DefineMain();
+bool CheckDefined(string func_name);
+ui32 mapToNumber(string s);
+ui32 mapToSymbol(string s);
+ui32 GetSymbol(string name);
 
-	string line;
-	string contents;
-	while(getline(input_file, line))
-	{
-		contents += line + "\n";
-	}
-	input_file.close();
+bool isInteger(string s);
+bool isAddress(string s);
+bool isFunction(string s);
+bool isNegative(string s);
 
-	// parse input file
-	Lexer lexer;
-	strings lexemes = lexer.lex(contents);
-
-	//compile to binary
-	DefineMain();
-	vector<ui32> instructions = Compile(lexemes);
-	
-	// write to a bin file
-	ofstream ofile;
-	
-	char* filename;
-	string fn;
-	for (ui32 i = 0; argv[1][i] != '.'; i++) 
-	{
-		fn[i] = argv[1][i];
-	}
-	filename = strcat(reinterpret_cast<char *>(&fn), ".cben");
-	ofile.open(filename, ios::binary);
-	for (ui32 i = 0; i < instructions.size(); i++)
-	{
-		ofile.write(reinterpret_cast<char *>(&instructions[i]), sizeof(ui32));
-	}
-
-	ofile.close();
-	return 0;
-}
 
 vector<ui32> Compile(strings s)
 {
@@ -160,7 +101,7 @@ vector<ui32> Compile(strings s)
 			// Get symbol by function name
 
 			ui32 FunctionSymbol = mapToSymbol(func_name);
-			printf("symbolizing function : %s (symbol : %x)\n",func_name, FunctionSymbol);
+			printf("symbolizing function : %s (symbol : %x)\n", func_name.c_str(), FunctionSymbol);
 			instructions.push_back(FunctionSymbol);
 
 		}
@@ -250,7 +191,7 @@ bool CheckDefined(string func_name)
 	return false;
 }
 
-bool DefineMain()
+void DefineMain()
 {
 	Symbol symbol;
 	symbol.name = "main";

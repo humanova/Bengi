@@ -60,6 +60,7 @@ FILE* IOFile::LoadSource()
 //========== LOAD FILE WITH STRING STUFF ===========
 
 //Constructor with pre-defined s_sourcePath and s_outPath
+
 IOFile::IOFile(std::string s_sourcePath, std::string s_outPath)
 {
 	this->s_sourcePath = s_sourcePath;
@@ -68,10 +69,10 @@ IOFile::IOFile(std::string s_sourcePath, std::string s_outPath)
 	return;
 }
 
-//Load the source from s_sourcePath (given in argument) and open with referenced "file"
+/*Load the source from s_sourcePath (given in argument) and open with referenced "file"
 void IOFile::s_LoadSource(std::string s_sourcePath, std::ofstream &file)
 {
-	file.open(s_sourcePath, 1);
+	file.open(s_sourcePath.c_str(), 1);
 	if (!file.is_open())
 	{
 		BengiError(Error::INPUT_FILE_NOT_FOUND);
@@ -79,14 +80,43 @@ void IOFile::s_LoadSource(std::string s_sourcePath, std::ofstream &file)
 	}
 	this->s_sourcePath = s_sourcePath;
 	file.close();
-}
+}*/
+
+#if defined(__WIN32__)
 
 //Overload 1 - load the source from s_sourcePath and open with class variable "file" 
 void IOFile::s_LoadSource(std::string s_sourcePath)
 {
 	
-	this->s_sourceFile.open(s_sourcePath, 1);
+	this->s_sourceFile.open(s_sourcePath.c_str(), 1);
 	if (!s_sourceFile.is_open())
+	{
+		BengiError(Error::INPUT_FILE_NOT_FOUND);
+		exit(-1);
+	}
+	this->s_sourcePath = s_sourcePath;
+	s_sourceFile.close();
+}
+
+//Overload 2 - load the source from s_sourcePath (class variable) and open with class variable "file"
+void IOFile::s_LoadSource()
+{
+
+	this->s_sourceFile.open(s_sourcePath.c_str(), 1);
+	if (!s_sourceFile.is_open())
+	{
+		BengiError(Error::INPUT_FILE_NOT_FOUND);
+		exit(-1);
+	}
+	s_sourceFile.close();
+}
+
+#else
+void IOFile::s_LoadSource(std::string s_sourcePath)
+{
+	
+	this->s_sourceFile = std::ifstream(s_sourcePath);
+	if (!s_sourceFile)
 	{
 		BengiError(Error::INPUT_FILE_NOT_FOUND);
 		exit(-1);
@@ -99,14 +129,15 @@ void IOFile::s_LoadSource(std::string s_sourcePath)
 void IOFile::s_LoadSource()
 {
 
-	this->s_sourceFile.open(s_sourcePath, 1);
-	if (!s_sourceFile.is_open())
+	this->s_sourceFile = std::ifstream(s_sourcePath);
+	if (!s_sourceFile)
 	{
 		BengiError(Error::INPUT_FILE_NOT_FOUND);
 		exit(-1);
 	}
 	s_sourceFile.close();
 }
+#endif
 
 bool IOFile::isSourceSet()
 {

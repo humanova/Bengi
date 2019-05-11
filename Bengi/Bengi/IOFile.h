@@ -4,7 +4,9 @@
 #pragma once
 #include <fstream>
 #include <string>
-#include <tchar.h>
+#if defined(__WIN32__)
+	#include <tchar.h>
+#endif
 
 #include "Error.h"
 

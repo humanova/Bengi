@@ -3,10 +3,16 @@
 
 #include "Version.h"
 
+
 char* GetVersion()
 {
 	char version_buffer[20];
-	sprintf_s(version_buffer, "%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD);
+	#if defined(_MSC_VER)
+		sprintf_s(version_buffer, "%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD);
+	#else
+		sprintf(version_buffer, "%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD);
+	#endif
+	
 	return version_buffer;
 }
 

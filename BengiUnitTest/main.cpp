@@ -3,9 +3,16 @@
 
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
-#include "../Bengi/VM.h"
+#include "../Bengi/Bengi/VM.h"
 
-string testFolder = "C:\\Users\\msi\\Desktop\\VSCode Folder\\Bengi-Lang\\tests\\";
+// my test directiories
+#if defined(__WIN32__)
+	string testFolder = "C:\\Users\\msi\\Desktop\\VSCode Folder\\Bengi-Lang\\tests\\";
+#elif defined (__linux__)
+	string testFolder = "home\\humanova\\Documents\\pjs\\Bengi\\bengi\\tests\\";
+#endif
+
+// test cases
 vector<string> test
 { testFolder + "test1.cben",
 	testFolder + "test2.cben",
@@ -14,6 +21,7 @@ vector<string> test
 	testFolder + "test5.cben",
 	testFolder + "test6.cben"
 };
+
 vector<i32> testResult
 {
 	40,

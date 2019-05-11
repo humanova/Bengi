@@ -163,11 +163,10 @@ i32* VM::getRegisterAddress(i32 data)
 
 i32* VM::getAddress(i32 data)
 {
-
 	// Stack frame icindeysek negatif degerlerden 1 cikaricaz 
 	// orn : [-1] olan her NADDR [-2] olacak 
 	char buffer[33];
-	string data_str = string((char *)(itoa(data, buffer, 10)));
+	string data_str = std::to_string(data);
 	data_str = "[" + data_str + "]";
 	curr_addr = data_str;
 	if (BP != 0 && data < 0)
