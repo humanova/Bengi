@@ -6,7 +6,7 @@
 #include "../Bengi/Bengi/VM.h"
 
 // my test directiories
-#if defined(__WIN32__)
+#if defined(_WIN32)
 	string testFolder = "C:\\Users\\msi\\Desktop\\VSCode Folder\\Bengi-Lang\\tests\\";
 #elif defined (__linux__)
 	string testFolder = "home\\humanova\\Documents\\pjs\\Bengi\\bengi\\tests\\";

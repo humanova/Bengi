@@ -82,7 +82,7 @@ void IOFile::s_LoadSource(std::string s_sourcePath, std::ofstream &file)
 	file.close();
 }*/
 
-#if defined(__WIN32__)
+#if defined(_WIN32)
 
 //Overload 1 - load the source from s_sourcePath and open with class variable "file" 
 void IOFile::s_LoadSource(std::string s_sourcePath)

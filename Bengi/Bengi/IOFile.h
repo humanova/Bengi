@@ -4,7 +4,7 @@
 #pragma once
 #include <fstream>
 #include <string>
-#if defined(__WIN32__)
+#if defined(_WIN32)
 	#include <tchar.h>
 #endif
 

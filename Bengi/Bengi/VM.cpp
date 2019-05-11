@@ -38,6 +38,7 @@
 */
 
 #include "VM.h"
+#include <string>
 #pragma warning(disable : 4996)
 
 VM::VM()
@@ -166,7 +167,7 @@ i32* VM::getAddress(i32 data)
 	// Stack frame icindeysek negatif degerlerden 1 cikaricaz 
 	// orn : [-1] olan her NADDR [-2] olacak 
 	char buffer[33];
-	string data_str = std::to_string(data);
+	string data_str = to_string(data);
 	data_str = "[" + data_str + "]";
 	curr_addr = data_str;
 	if (BP != 0 && data < 0)

@@ -1,8 +1,8 @@
 ﻿// 2019 Emir Erbasan(humanova)
 // GPL v2 License, see LICENSE for more details
 
-#include "../Bengi/VM.h"
-#include "../Bengi/IOFile.h"
+#include "../../Bengi/Bengi/VM.h"
+#include "../../Bengi/Bengi/IOFile.h"
 
 #define DLLFUNC extern "C" __declspec(dllexport)
 

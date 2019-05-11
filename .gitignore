@@ -261,3 +261,4 @@ paket-files/
 __pycache__/
 *.pyc
 /tests/bengi.dll
+/tests/bengi.so

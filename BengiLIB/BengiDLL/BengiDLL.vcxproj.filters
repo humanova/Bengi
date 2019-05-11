@@ -18,25 +18,14 @@
     <ClCompile Include="BengiDLL.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="..\Bengi\IOFile.cpp">
+    <ClCompile Include="..\..\Bengi\Bengi\Error.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="..\Bengi\VM.cpp">
+    <ClCompile Include="..\..\Bengi\Bengi\IOFile.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-    <ClCompile Include="..\Bengi\Error.cpp">
+    <ClCompile Include="..\..\Bengi\Bengi\VM.cpp">
       <Filter>Kaynak Dosyalar</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Bengi\IOFile.h">
-      <Filter>Üst Bilgi Dosyaları</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Bengi\VM.h">
-      <Filter>Üst Bilgi Dosyaları</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Bengi\Error.h">
-      <Filter>Üst Bilgi Dosyaları</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

@@ -132,7 +132,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -149,15 +149,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Bengi\Error.cpp" />
-    <ClCompile Include="..\Bengi\IOFile.cpp" />
-    <ClCompile Include="..\Bengi\VM.cpp" />
+    <ClCompile Include="..\..\Bengi\Bengi\Error.cpp" />
+    <ClCompile Include="..\..\Bengi\Bengi\IOFile.cpp" />
+    <ClCompile Include="..\..\Bengi\Bengi\VM.cpp" />
     <ClCompile Include="BengiDLL.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Bengi\Error.h" />
-    <ClInclude Include="..\Bengi\IOFile.h" />
-    <ClInclude Include="..\Bengi\VM.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
