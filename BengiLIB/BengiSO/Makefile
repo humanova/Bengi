@@ -7,10 +7,12 @@ else
 endif
 
 BUILD_DIR  = ../../$(BIN)
+TESTS_DIR  = ../../tests
 
 bengi: Error.o IOFile.o VM.o Bengi.o
 	g++ $(CFLAGS) -o $(BIN)/bengi.so $(BIN)/VM.o $(BIN)/Error.o $(BIN)/IOFile.o $(BIN)/Bengi.o
 	cp -f $(BIN)/bengi.so $(BUILD_DIR)
+	cp -f $(BIN)/bengi.so $(TESTS_DIR)
 
 Bengi.o:
 	g++ $(CFLAGS) -c Bengi.cc -o $(BIN)/Bengi.o

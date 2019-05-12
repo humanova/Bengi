@@ -30,6 +30,7 @@ bool isNegative(string s);
 
 vector<ui32> Compile(strings s)
 {
+	DefineMain();
 	vector<ui32> instructions;
 	for (ui32 i = 0; i < s.size(); i++)
 	{
@@ -236,6 +237,7 @@ ui32 mapToSymbol(string s)
 		return symbol.symbol;
 	}
 }
+
 ui32 mapToNumber(string s)
 {
 	if (s == "end")

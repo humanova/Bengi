@@ -16,13 +16,13 @@ int main(int argc, char *argv[])
 		cout << "Usage: " << argv[0] << " <basm-file>" << endl;
 		exit(1);
 	}
-	
+
 	//read input file
 	ifstream input_file;
 	input_file.open(argv[1]);
 	if (!input_file.is_open())
 	{
-		cout << "basm error : could not open [" << argv[1] << "]" << endl;
+		cout << "basm error : could not open '" << argv[1] << "'" << endl;
 		exit(1);
 	}
 
@@ -39,16 +39,15 @@ int main(int argc, char *argv[])
 	strings lexemes = lexer.lex(contents);
 
 	//compile to binary
-	DefineMain();
 	vector<ui32> instructions = Compile(lexemes);
 	
 	// create and write instructions to a bin file
 	ofstream ofile;
-
 	string filename;
     string fn = string(argv[1]);
     fn = std::regex_replace(fn, std::regex("\\.basm"), "");
     filename = fn + ".cben";
+	
     ofile.open(filename.c_str(), ios::binary);
     for (ui32 i = 0; i < instructions.size(); i++)
     {

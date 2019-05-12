@@ -16,9 +16,9 @@ import sys
 
 def LoadDLL():
     if sys.platform == "win32":
-        Bengi = CDLL('bengi.dll')
+        Bengi = CDLL('./bengi.dll')
     else:
-        Bengi = CDLL('bengi.so', mode=RTLD_GLOBAL)
+        Bengi = CDLL('./bengi.so')
     return Bengi
 
 def RunCBEN(path):
