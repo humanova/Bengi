@@ -13,23 +13,17 @@ make clean
 make bengi
 cd ..
 
-cd BengiLIB/BengiSO
-echo "Compiling shared object file..." 
-make clean
-make bengi
-cd ..
-
 cd BengiUnitTest
 echo "Compiling run_tests..."
 make clean
 make run_tests
 cd ..
 
-# Compiling and running tests
+::Compiling and running tests
 cd tests
 echo "Compilin tests w/python script..."
-python3 compile.py
+python compile.py
 
 echo "Running tests using VM shared object w/python script..."
-python3 ben.py --test
+python ben.py --test
 cd ..

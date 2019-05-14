@@ -126,7 +126,7 @@ PC			0005
 
 5 VM Registers.
 
-![InstructionSet](_img/instruction_set.png)
+![InstructionSet](doc/turkish/bengi/instruction_set.png)
 
 
 ## Registers

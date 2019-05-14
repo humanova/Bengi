@@ -2,7 +2,7 @@
 CFLAGS = -std=c++11
 SRC_DIR = Bengi/
 
-ifeq ($(OS), Windows NT)
+ifeq ($(OS), Windows_NT)
 	BIN = bin/Win32
 else
 	BIN = bin/Linux

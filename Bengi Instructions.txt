@@ -23,10 +23,8 @@ CURRENT :
 
 	Bengi calling convention:
 
-	push arg2
-	push arg1
 	caller :	push arg	//	push function args
-				call func	//	(push PC on stack,push BP on stack, set PC to func address, set BP to BP address)
+				call func	//	(push PC on stack, push BP on stack, set PC to func address, set BP to BP address)
 				pop arg		//	remove arguments
 
 	callee :	push[-1]	//	get arg

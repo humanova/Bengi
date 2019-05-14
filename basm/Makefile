@@ -3,7 +3,7 @@ CFLAGS = -std=c++11
 
 SRC_DIR = basm/
 
-ifeq ($(OS), Windows NT)
+ifeq ($(OS), Windows_NT)
 	BIN = bin/Win32
 else
 	BIN = bin/Linux
