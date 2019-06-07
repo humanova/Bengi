@@ -14,7 +14,8 @@ vector<string> test
 	testFolder + "test3.cben",
 	testFolder + "test4.cben",
 	testFolder + "test5.cben",
-	testFolder + "test6.cben"
+	testFolder + "test6.cben",
+	testFolder + "test7.cben",
 	
 };
 vector<i32> testResult
@@ -24,7 +25,8 @@ vector<i32> testResult
 	11,
 	46368,
 	100,
-	10
+	10,
+	46656
 };
 
 namespace BengiTest
@@ -91,6 +93,18 @@ namespace BengiTest
 			VM testVM;
 			testVM.LoadBinary(test[5]);
 			Assert::AreEqual(testResult[5], testVM.run());
+		}
+	};
+
+	TEST_CLASS(Labeling)
+	{
+	public:
+
+		TEST_METHOD(Test1)
+		{
+			VM testVM;
+			testVM.LoadBinary(test[6]);
+			Assert::AreEqual(testResult[6], testVM.run());
 		}
 	};
 }

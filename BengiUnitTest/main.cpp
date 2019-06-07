@@ -19,7 +19,8 @@ vector<string> test
 	testFolder + "test3.cben",
 	testFolder + "test4.cben",
 	testFolder + "test5.cben",
-	testFolder + "test6.cben"
+	testFolder + "test6.cben",
+	testFolder + "test7.cben"
 };
 
 vector<i32> testResult
@@ -29,7 +30,8 @@ vector<i32> testResult
 	11,
 	46368,
 	100,
-	10
+	10,
+	46656
 };
 
 TEST_CASE("Arithmetic and Logical operations " "[ALO]")
@@ -70,5 +72,13 @@ TEST_CASE("Function operations", "[FO]")
 	{
 		VM vm; vm.LoadBinary(test[5]);
 		REQUIRE(vm.run() == testResult[5]);
+	}
+}
+
+TEST_CASE("Label operations", "[LO]")
+{
+	{
+		VM vm; vm.LoadBinary(test[6]);
+		REQUIRE(vm.run() == testResult[6]);
 	}
 }

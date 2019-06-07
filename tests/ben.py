@@ -9,6 +9,7 @@ results = {
     4 : 46368,
     5 : 100,
     6 : 10,
+    7 : 46656,
 }
 
 from ctypes import CDLL, create_string_buffer, RTLD_GLOBAL
@@ -57,6 +58,7 @@ if __name__ == "__main__":
             print(f"{res[0]}/{res[1]} tests passed...")
 
         else:
-            exit()
+            tos = RunCBEN(sys.argv[1])
+            print(f"bengi {sys.argv[1]} result : {tos}")
     else:
         exit()

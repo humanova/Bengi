@@ -38,4 +38,6 @@
     and
     push 2
     shl     //; 1010 << 2 -> 101000 -> 40
+    inc [sp]
+    dec [sp]
     end     //; tos : 40

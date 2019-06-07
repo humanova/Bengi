@@ -9,6 +9,9 @@
 #define MAIN_SYMBOL 0xE0000000 
 #define MEMORY_BUFFER 1000000
 
+#define FUNC_DECL_INST 0x80000090
+#define LABEL_DECL_INST 0x80000093
+
 #define DEBUG 0
 
 typedef int32_t i32;
@@ -34,9 +37,10 @@ class VM
 
 	i32 typ = 0;
 	i32 dat = 0;
-	i32 running = 1;
 	string curr_addr;
 	vector<Symbol> SymbolTable;
+	int funcDepth = 0;			// main functions is 0 level depth
+	bool init_step = false;
 	
 	// private functions
 	i32 getType(ui32 instruction);
@@ -71,8 +75,17 @@ public:
 	VM();
 	~VM();
 	i32 run();
+	i32 run_step();
 	void LoadInstructions(vector<ui32> prog);
 	void LoadBinary(string path);
 	void PrintStack();
+	
+	//out funcs
+	i32 _GetStackElement(int addr);
+	i32 _GetRegisterValue(int regId);
+	i32 _Addr2Symbol(i32 addr);
+
+	i32 currFunctionAddr;
+	i32 running = true;
 };
 

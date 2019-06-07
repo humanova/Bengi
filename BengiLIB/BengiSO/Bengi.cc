@@ -25,3 +25,59 @@ extern "C" i32 Run()
 		return result;
 	}
 }
+
+
+extern "C" i32 RunStep()
+{
+	static bool init = true;
+	static bool running = true;
+	static bool check_file = false;
+
+	if (init)
+	{
+		check_file = iofile.checkSource();
+		init = false;
+	}
+		
+	if (check_file && running)
+	{
+		i32 tos = BengiVM->run_step();
+		running = BengiVM->running;
+		return tos;
+	}
+	else
+	{
+		delete BengiVM;
+		check_file = false;
+		running = false;
+		init = true;
+		return 0xFFFFFFFF;
+	}
+}
+
+// VM UTILS
+
+extern "C" int isRunning()
+{
+	return (int)(BengiVM->running);
+}
+
+extern "C" i32 GetStackElement(int addr)
+{
+	return BengiVM->_GetStackElement(addr);
+}
+
+extern "C" i32 GetRegister(int regId)
+{
+	return BengiVM->_GetRegisterValue(regId);
+}
+
+extern "C" i32 GetCurrFuncAddr()
+{
+	return BengiVM->currFunctionAddr;
+}
+
+extern "C" i32 GetCurrFuncSymbol()
+{
+	return BengiVM->_Addr2Symbol(BengiVM->currFunctionAddr);
+}

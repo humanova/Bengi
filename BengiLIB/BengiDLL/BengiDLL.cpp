@@ -14,7 +14,7 @@ DLLFUNC bool LoadBinary(char* path)
 	BengiVM = new VM();
 	iofile.sourcePath = path;
 	iofile.checkSource();
-	BengiVM->LoadBinary(std::string(path));
+	BengiVM->LoadBinary(string(path));
 }
 
 DLLFUNC i32 Run()
@@ -28,6 +28,57 @@ DLLFUNC i32 Run()
 }
 
 
+DLLFUNC i32 RunStep()
+{
+	static bool init = true;
+	static bool running = true;
+	static bool check_file = false;
 
+	if (init)
+	{
+		check_file = iofile.checkSource();
+		init = false;
+	}
+		
+	if (check_file && running)
+	{
+		i32 tos = BengiVM->run_step();
+		running = BengiVM->running;
+		return tos;
+	}
+	else
+	{
+		delete BengiVM;
+		check_file = false;
+		running = false;
+		init = true;
+		return 0xFFFFFFFF;
+	}
+}
 
+// VM UTILS
 
+DLLFUNC int isRunning()
+{
+	return (int)(BengiVM->running);
+}
+
+DLLFUNC i32 GetStackElement(int addr)
+{
+	return BengiVM->_GetStackElement(addr);
+}
+
+DLLFUNC i32 GetRegister(int regId)
+{
+	return BengiVM->_GetRegisterValue(regId);
+}
+
+DLLFUNC i32 GetCurrFuncAddr()
+{
+	return BengiVM->currFunctionAddr;
+}
+
+DLLFUNC i32 GetCurrFuncSymbol()
+{
+	return BengiVM->_Addr2Symbol(BengiVM->currFunctionAddr);
+}

@@ -247,7 +247,7 @@ const char* VM::getRegisterName(i32* reg)
 	}
 	else
 	{
-			cout << "bengivm error(getRegisterName) : invalid register reference";
+		cout << "bengivm error(getRegisterName) : invalid register reference";
 		exit(1);
 	}
 }
@@ -257,7 +257,8 @@ vector<VM::Symbol> VM::SetSymbolTable(vector<ui32> instructions)
 	vector<VM::Symbol> symbols;
 	for (int i = 0; i < instructions.size(); i++)
 	{
-		if (instructions[i] == 0x80000090) // Func decleration
+		// check func/label decls.
+		if (instructions[i] == FUNC_DECL_INST || instructions[i] == LABEL_DECL_INST) 
 		{
 			Symbol symbol;
 			symbol.symbol = instructions[++i];
@@ -296,7 +297,6 @@ void VM::decode()
 {
 	typ = getType(Memory[PC]);
 	dat = getData(Memory[PC]);
-
 }
 
 void VM::execute()
@@ -306,132 +306,198 @@ void VM::execute()
 
 void VM::doPrimitive()
 {
-
 	switch (dat)
 	{
 	case 0x0: // halt
-		#if DEBUG
-			cout << "end" << endl;
-		#endif
+
 		running = 0;
+#if DEBUG
+		cout << "end" << endl;
+#endif
 		break;
 
 		// == Arithmetic Instructions ==
 	case 0x1: // add
-		#if DEBUG
-			cout << "add " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "add " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] + Memory[SP];
 		SP--;
 		break;
 	case 0x2: // sub
-		#if DEBUG
-			cout << "sub " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "sub " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] - Memory[SP];
 		SP--;
 		break;
 	case 0x3: // mul
-		#if DEBUG
-			cout << "mul " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "mul " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] * Memory[SP];
 		SP--;
 		break;
 	case 0x4: // div
-		#if DEBUG
-			cout << "div " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "div " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] / Memory[SP];
 		SP--;
 		break;
 	case 0x5: // mod
-		#if DEBUG
-			cout << "mod " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "mod " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] % Memory[SP];
 		SP--;
 		break;
 	case 0x6: // or
-		#if DEBUG
-			cout << "or " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "or " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] | Memory[SP];
 		SP--;
 		break;
 	case 0x7: // xor
-		#if DEBUG
-			cout << "xor " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "xor " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] ^ Memory[SP];
 		SP--;
 		break;
 	case 0x8: // and
-		#if DEBUG
-			cout << "and " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "and " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] & Memory[SP];
 		SP--;
 		break;
 	case 0x9: // equal
-		#if DEBUG
-			cout << "eq " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "eq " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] == Memory[SP];
 		SP--;
 		break;
 	case 0xA: // not eq
-		#if DEBUG
-			cout << "ne " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "ne " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] != Memory[SP];
 		SP--;
 		break;
 	case 0xB: // lt
-		#if DEBUG
-			cout << "lt " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "lt " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] < Memory[SP];
 		SP--;
 		break;
 	case 0xC: // lt eq
-		#if DEBUG
-			cout << "le " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "le " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] <= Memory[SP];
 		SP--;
 		break;
 	case 0xD: // gt
-		#if DEBUG
-			cout << "gt " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "gt " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] > Memory[SP];
 		SP--;
 		break;
 	case 0xE: // gt eq
-		#if DEBUG
-			cout << "ge " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "ge " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] >= Memory[SP];
 		SP--;
 		break;
 	case 0xF: // sh left
-		#if DEBUG
-			cout << "shl " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "shl " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] << Memory[SP];
 		SP--;
 		break;
 	case 0x10: // sh right
-		#if DEBUG
-			cout << "shr " << Memory[SP - 1] << " " << Memory[SP] << endl;
-		#endif
+#if DEBUG
+		cout << "shr " << Memory[SP - 1] << " " << Memory[SP] << endl;
+#endif
 		Memory[SP - 1] = Memory[SP - 1] >> Memory[SP];
 		SP--;
 		break;
+	case 0x11:
+		fetch();
+		decode();
+		if (typ == REG)
+		{
+			i32* reg = getRegister(dat);
+			*reg += 1;
+#if DEBUG
+			cout << "inc " << getRegisterName(reg) << endl;
+#endif
+		}
+		else if (typ == REGADDR)
+		{
+			i32* reg = getRegister(dat);
+			*reg += 1;
+#if DEBUG
+			cout << "inc " << curr_addr.c_str() << endl;
+#endif
+		}
+		else if (typ == ADDR)
+		{
+			i32* addr = getAddress(dat);
+			*addr += 1;
+#if DEBUG
+			cout << "inc " << curr_addr.c_str() << endl;
+#endif
+		}
+		else
+		{
+			cerr << "bengivm error : invalid 'inc' argument" << endl;
+			exit(1);
+		}
+		break;
+
+	case 0x12:
+		fetch();
+		decode();
+		if (typ == REG)
+		{
+			i32* reg = getRegister(dat);
+			*reg -= 1;
+#if DEBUG
+			cout << "dec " << getRegisterName(reg) << " " << *reg << endl;
+#endif
+		}
+		else if (typ == REGADDR)
+		{
+			i32* reg = getRegister(dat);
+			*reg -= 1;
+#if DEBUG
+			cout << "dec " << curr_addr.c_str() << endl;
+#endif
+		}
+		else if (typ == ADDR)
+		{
+			i32* addr = getAddress(dat);
+			*addr -= 1;
+#if DEBUG
+			cout << "dec " << curr_addr.c_str() << endl;
+#endif
+		}
+		else
+		{
+			cerr << "bengivm error : invalid 'dec' argument" << endl;
+			exit(1);
+		}
+		break;
 
 		// == Basic Instructions == 
-
 
 	case 0x50: // push
 		//get next argument
@@ -439,52 +505,52 @@ void VM::doPrimitive()
 		decode();
 		if (typ == PINT || typ == NINT)
 		{
-			#if DEBUG
-				cout << "push " << dat << endl;
-			#endif
+#if DEBUG
+			cout << "push " << dat << endl;
+#endif
 			SP++;
 			Memory[SP] = dat;
 		}
 		else if (typ == REG)
 		{
 			i32* reg = getRegister(dat);
-			#if DEBUG
-				cout << "push " << getRegisterName(reg) << endl;
-			#endif
+#if DEBUG
+			cout << "push " << getRegisterName(reg) << endl;
+#endif
 			SP++;
 			Memory[SP] = *reg;
 		}
 		else if (typ == REGADDR)
 		{
 			i32* reg = getRegister(dat);
-			#if DEBUG
-				cout << "push " << curr_addr.c_str() << endl;
-			#endif
+#if DEBUG
+			cout << "push " << curr_addr.c_str() << endl;
+#endif
 			SP++;
 			Memory[SP] = *reg;
 		}
 		else if (typ == ADDR || typ == NADDR)
 		{
 			i32* addr = getAddress(dat);
-			#if DEBUG
-				cout << "push " << curr_addr.c_str() << endl; 
-			#endif
+#if DEBUG
+			cout << "push " << curr_addr.c_str() << endl;
+#endif
 			SP++;
 			Memory[SP] = *addr;
 
 		}
 		else
 		{
-				cout << "bengivm error : invalid push argument" << endl;
+			cerr << "bengivm error : invalid 'push' argument" << endl;
 			exit(1);
 		}
 		break;
 
 	case 0x51: // pop
 		SP--;
-		#if DEBUG
-			cout << "pop" << endl;
-		#endif
+#if DEBUG
+		cout << "pop" << endl;
+#endif
 		break;
 
 	case 0x52: // load (mov ax, ?) 
@@ -492,34 +558,39 @@ void VM::doPrimitive()
 		decode();
 		if (typ == PINT || typ == NINT)
 		{
-			#if DEBUG
-				cout << "load " << dat << endl;
-			#endif
+#if DEBUG
+			cout << "load " << dat << endl;
+#endif
 			AX = dat;
 		}
 		else if (typ == REG)
 		{
 			i32* reg = getRegister(dat);
-			#if DEBUG
-				cout << "load " << getRegisterName(reg) << endl;
-			#endif
+#if DEBUG
+			cout << "load " << getRegisterName(reg) << endl;
+#endif
 			AX = *reg;
 		}
 		else if (typ == REGADDR)
 		{
 			i32* reg = getRegister(dat);
-			#if DEBUG
-				cout << "load " << curr_addr.c_str()<< endl;
-			#endif
+#if DEBUG
+			cout << "load " << curr_addr.c_str() << endl;
+#endif
 			AX = *reg;
 		}
 		else if (typ == ADDR || typ == NADDR)
 		{
 			i32* addr = getAddress(dat);
-			#if DEBUG
-				cout << "load " << curr_addr.c_str() << endl;
-			#endif
+#if DEBUG
+			cout << "load " << curr_addr.c_str() << endl;
+#endif
 			AX = *addr;
+		}
+		else
+		{
+			cerr << "bengivm error : invalid 'load' argument" << endl;
+			exit(1);
 		}
 		break;
 
@@ -527,284 +598,310 @@ void VM::doPrimitive()
 		fetch();
 		decode();
 		{
-		i32 dest_type = typ;
-		i32 dest = dat;
-		fetch();
-		decode();
-		i32 src_type = typ;
-		i32 src = dat;
+			i32 dest_type = typ;
+			i32 dest = dat;
+			fetch();
+			decode();
+			i32 src_type = typ;
+			i32 src = dat;
 
-		if (dest_type == REG || dest_type == REGADDR)
-		{
-			i32 *reg = getRegister(dest);
-
-			#if DEBUG
-			const char* dest_reg_name;
-			if (dest_type == REG)
-				dest_reg_name = getRegisterName(reg);
-			else
-				dest_reg_name = curr_addr.c_str();;
-			#endif
-
-			if (src_type == PINT || src_type == NINT)
+			if (dest_type == REG || dest_type == REGADDR)
 			{
-				#if DEBUG
+				i32 *reg = getRegister(dest);
+
+#if DEBUG
+				const char* dest_reg_name;
+				if (dest_type == REG)
+					dest_reg_name = getRegisterName(reg);
+				else
+					dest_reg_name = curr_addr.c_str();;
+#endif
+
+				if (src_type == PINT || src_type == NINT)
+				{
+#if DEBUG
 					cout << "mov " << dest_reg_name << ", " << src << endl;
-				#endif
-				*reg = dat;
-			}
-			else if (src_type == REG)
-			{
-				i32* src_reg = getRegister(src);
-				#if DEBUG
+#endif
+					*reg = dat;
+				}
+				else if (src_type == REG)
+				{
+					i32* src_reg = getRegister(src);
+#if DEBUG
 					cout << "mov " << dest_reg_name << ", " << getRegisterName(src_reg) << endl;
-				#endif
-				*reg = *src_reg;
-			}
-			else if (src_type == REGADDR)
-			{
-				
-				i32* src_reg = getRegister(src);
-				#if DEBUG
+#endif
+					*reg = *src_reg;
+				}
+				else if (src_type == REGADDR)
+				{
+
+					i32* src_reg = getRegister(src);
+#if DEBUG
 					cout << "mov " << dest_reg_name << ", " << curr_addr.c_str() << endl;
-				#endif
-				*reg = *src_reg;
-			}
-			else if (src_type == ADDR || src_type == NADDR)
-			{
-				i32* src_addr = getAddress(src);
-				#if DEBUG
+#endif
+					*reg = *src_reg;
+				}
+				else if (src_type == ADDR || src_type == NADDR)
+				{
+					i32* src_addr = getAddress(src);
+#if DEBUG
 					cout << "mov " << dest_reg_name << ", " << curr_addr.c_str() << endl;
-				#endif
-				*reg = *src_addr;
-				
+#endif
+					*reg = *src_addr;
+
+				}
+				else
+				{
+					cout << "bengivm error : invalid 'mov' argument (src must be a register, address or an immediate value)" << endl;
+					exit(1);
+				}
 			}
-			else
+			else if (dest_type == ADDR || dest_type == NADDR)
 			{
-				cout << "bengivm error : invalid mov argument (src must be a register, address or an immediate value)" << endl;
-				exit(1);
-			}
-		}
-		else if (dest_type == ADDR || dest_type == NADDR)
-		{
-			i32* dest_addr = getAddress(dest);
-			string dest_name = curr_addr;
-			if (src_type == PINT || src_type == NINT)
-			{
-				#if DEBUG
+				i32* dest_addr = getAddress(dest);
+				string dest_name = curr_addr;
+				if (src_type == PINT || src_type == NINT)
+				{
+#if DEBUG
 					cout << "mov " << dest_name.c_str() << ", " << src << endl;
-				#endif
-				*dest_addr = src;
-			}
-			else if (src_type == REG)
-			{
-				i32* src_reg = getRegister(src);
-				#if DEBUG
+#endif
+					*dest_addr = src;
+				}
+				else if (src_type == REG)
+				{
+					i32* src_reg = getRegister(src);
+#if DEBUG
 					cout << "mov " << dest_name.c_str() << ", " << src_reg << endl;
-				#endif
-				*dest_addr = *src_reg;
-			}
-			else if (src_type == REGADDR)
-			{
-				i32* src_reg = getRegister(src);
-				#if DEBUG
+#endif
+					*dest_addr = *src_reg;
+				}
+				else if (src_type == REGADDR)
+				{
+					i32* src_reg = getRegister(src);
+#if DEBUG
 					cout << "mov " << dest_name.c_str() << ", " << curr_addr.c_str() << endl;
-				#endif
-				*dest_addr = *src_reg;
-			}
-			else if (src_type == ADDR || src_type == NADDR)
-			{
-				i32* src_addr = getAddress(src);
-				#if DEBUG
+#endif
+					*dest_addr = *src_reg;
+				}
+				else if (src_type == ADDR || src_type == NADDR)
+				{
+					i32* src_addr = getAddress(src);
+#if DEBUG
 					cout << "mov " << dest_name.c_str() << ", " << curr_addr.c_str() << endl;
-				#endif
-				*dest_addr = *src_addr;
+#endif
+					*dest_addr = *src_addr;
+				}
+				else
+				{
+					cout << "bengivm error : invalid 'mov' argument (src must be a register, address or an immediate value)" << endl;
+					exit(1);
+				}
 			}
 			else
 			{
-				cout << "bengivm error : invalid mov argument (src must be a register, address or an immediate value)" << endl;
+				cout << "bengivm error : invalid 'mov' argument (dest must be a register or address)" << endl;
+				cout << "dest type was : " << dest_type << endl;
 				exit(1);
 			}
-		}
-		else
-		{
-			cout << "bengivm error : invalid mov argument (dest must be a register or address)" << endl;
-			cout << "dest type was : " << dest_type << endl;
-			exit(1);
-		}
 		}
 		break;
-		
+
 	case 0x54: // jmp
 		fetch();
 		decode();
 		{
-		if (typ == PINT)
-		{
-			#if DEBUG
+			if (typ == PINT)
+			{
+#if DEBUG
 				cout << "jmp " << dat << endl;
-			#endif
-			PC = dat - 1;
-		}
-		else if (typ == REG)
-		{
-			i32* dest_reg = getRegister(dat);
-			#if DEBUG
+#endif
+				PC = dat - 1;
+			}
+			else if (typ == REG)
+			{
+				i32* dest_reg = getRegister(dat);
+#if DEBUG
 				cout << "jmp " << getRegisterName(dest_reg) << endl;
-			#endif
-			PC = *dest_reg - 1;
-		}
-		else if (typ == REGADDR)
-		{
-			i32* dest_reg = getRegister(dat);
-			#if DEBUG
+#endif
+				PC = *dest_reg - 1;
+			}
+			else if (typ == REGADDR)
+			{
+				i32* dest_reg = getRegister(dat);
+#if DEBUG
 				cout << "jmp " << curr_addr.c_str() << endl;
-			#endif
-			PC = *dest_reg - 1;
-		}
-		else if (typ == ADDR || typ == NADDR)
-		{
-			i32* dest_addr = getAddress(dat);
-			#if DEBUG
+#endif
+				PC = *dest_reg - 1;
+			}
+			else if (typ == ADDR || typ == NADDR)
+			{
+				i32* dest_addr = getAddress(dat);
+#if DEBUG
 				cout << "jmp " << curr_addr.c_str() << endl;
-			#endif
-			PC = *dest_addr - 1;
-		}
-		else
-		{
-			cout << "bengivm error : invalid jmp argument (dest must be a register, address or imm value)" << endl;
-		}
+#endif
+				PC = *dest_addr - 1;
+			}
+			else
+			{
+				cout << "bengivm error : invalid 'jmp' argument (dest must be a register, address or imm value)" << endl;
+			}
 		}
 		break;
-	
+
 	case 0x55: // jz  (jump if zero)
-		
+
 		fetch();
 		decode();
+		{
 		if (typ == PINT)
 		{
-			#if DEBUG
-				cout << "jz " << dat << endl;
-			#endif
-			if (Memory[SP] == 0) { PC = dat - 1; } 
+#if DEBUG
+			cout << "jz " << dat << endl;
+#endif
+			if (Memory[SP] == 0) { PC = dat - 1; }
 		}
 		else if (typ == REG)
 		{
 			i32* dest_reg = getRegister(dat);
-			#if DEBUG
-				cout << "jz " << getRegisterName(dest_reg) << endl;
-			#endif
+#if DEBUG
+			cout << "jz " << getRegisterName(dest_reg) << endl;
+#endif
 			if (Memory[SP] == 0) { PC = *dest_reg - 1; }
-				
+
 		}
 		else if (typ == REGADDR)
 		{
 			i32* dest_reg = getRegister(dat);
-			#if DEBUG
-				cout << "jz " << curr_addr.c_str() << endl;
-			#endif
+#if DEBUG
+			cout << "jz " << curr_addr.c_str() << endl;
+#endif
 			if (Memory[SP] == 0) { PC = *dest_reg - 1; }
 
 		}
 		else if (typ == ADDR || typ == NADDR)
 		{
 			i32 *dest_addr = getAddress(dat);
-			#if DEBUG
-				cout << "jz " << curr_addr.c_str() << endl;
-			#endif
+#if DEBUG
+			cout << "jz " << curr_addr.c_str() << endl;
+#endif
 			if (Memory[SP] == 0) { PC = *dest_addr - 1; }
-				
+
+		}
+		else if (typ == SYMB)
+		{
+			Symbol symb = getSymbol(Memory[PC]);
+			if (Memory[SP] == 0)
+			{
+				PC = symb.address;
+			}
+#if DEBUG
+			printf("jz %x (%d)\n", symb.symbol, PC);
+#endif
 		}
 		else
 		{
-			cout << "bengivm error : invalid jz argument (dest must be a register,address or imm value)" << endl;
+			cout << "bengivm error : invalid 'jz' argument (dest must be a register,address or imm value)" << endl;
+		}
 		}
 		SP--;
 		break;
-		
+
 	case 0x56: // jnz
 		fetch();
 		decode();
-			
+		{
 		if (typ == PINT)
 		{
-			#if DEBUG
-				cout << "jnz " << dat << endl;
-			#endif
-			if(Memory[SP] != 0)
+#if DEBUG
+			cout << "jnz " << dat << endl;
+#endif
+			if (Memory[SP] != 0)
+			{
 				PC = dat - 1;
+			}
 		}
 		else if (typ == REG)
 		{
 			i32* dest_reg = getRegister(dat);
-			#if DEBUG
-				cout << "jnz " << getRegisterName(dest_reg) << endl;
-			#endif
+#if DEBUG
+			cout << "jnz " << getRegisterName(dest_reg) << endl;
+#endif
 			if (Memory[SP] != 0) { PC = *dest_reg - 1; }
 		}
 		else if (typ == REG)
 		{
 			i32* dest_reg = getRegister(dat);
-			#if DEBUG
-				cout << "jnz " << curr_addr.c_str() << endl;
-			#endif
+#if DEBUG
+			cout << "jnz " << curr_addr.c_str() << endl;
+#endif
 			if (Memory[SP] != 0) { PC = *dest_reg - 1; }
 		}
 		else if (typ == ADDR || typ == NADDR)
 		{
 			i32* dest_addr = getAddress(dat);
-			#if DEBUG
-				cout << "jnz " << getRegisterName(dest_addr) << endl;
-			#endif
+#if DEBUG
+			cout << "jnz " << getRegisterName(dest_addr) << endl;
+#endif
 			if (Memory[SP] != 0) { PC = *dest_addr - 1; }
+			else
+			{
+				cout << "bengivm error : invalid 'jnz' argument (dest must be a register,address or imm value)" << endl;
+			}
+			SP--;
 		}
-		else
+		else if (typ == SYMB)
 		{
-			cout << "bengivm error : invalid jnz argument (dest must be a register,address or imm value)" << endl;
+			Symbol symb = getSymbol(Memory[PC]);
+			if (Memory[SP] != 0)
+			{
+				PC = symb.address;
+			}
+#if DEBUG
+			printf("jnz %x (%d)\n", symb.symbol, PC);
+#endif
 		}
 		SP--;
 		break;
-	
+
 	case 0x57: // cmp
 		fetch();
 		decode();
 		if (typ == PINT || typ == NINT)
 		{
-			#if DEBUG
-				cout << "cmp " << Memory[SP] << " " <<  dat << endl;
-			#endif
+#if DEBUG
+			cout << "cmp " << Memory[SP] << " " << dat << endl;
+#endif
 			Memory[SP] = (Memory[SP] == dat);
 		}
 		else if (typ == REG)
 		{
 			i32* reg = getRegister(dat);
-			#if DEBUG
-				cout << "cmp " << Memory[SP] << " " << getRegisterName(reg) << endl;
-			#endif
+#if DEBUG
+			cout << "cmp " << Memory[SP] << " " << getRegisterName(reg) << endl;
+#endif
 			Memory[SP] = (Memory[SP] == *reg);
 		}
 		else if (typ == REGADDR)
 		{
 			i32* reg = getRegister(dat);
-			#if DEBUG
-				cout << "cmp " << Memory[SP] << " " << curr_addr.c_str() << endl;
-			#endif
+#if DEBUG
+			cout << "cmp " << Memory[SP] << " " << curr_addr.c_str() << endl;
+#endif
 			Memory[SP] = (Memory[SP] == *reg);
 		}
 		else if (typ == ADDR || typ == NADDR)
 		{
 			i32* addr = getAddress(dat);
-			#if DEBUG
-				cout << "cmp " << Memory[SP] << " " << curr_addr.c_str() << endl;
-			#endif
+#if DEBUG
+			cout << "cmp " << Memory[SP] << " " << curr_addr.c_str() << endl;
+#endif
 			Memory[SP] = (Memory[SP] == *addr);
 		}
 		else
 		{
-			cout << "bengivm error : invalid cmp argument" << endl;
+			cout << "bengivm error : invalid 'cmp' argument" << endl;
 		}
 		break;
-	//TODOS :
 	case 0x90:	// Function Decleration
 		fetch();
 		decode();
@@ -813,35 +910,51 @@ void VM::doPrimitive()
 	case 0x91: // Func Return
 		BP = Memory[SP--];
 		PC = Memory[SP--] - 1;
-		#if DEBUG
-			printf("ret (%d)\n", PC);
-		#endif
+		
+		funcDepth--;
+		currFunctionAddr = PC;
+#if DEBUG
+		printf("ret (%d)\n", PC);
+#endif
 		break;
 
-	// Func Call:
-	// push PC
-	// push BP
-	// PC = new PC (jump)
-	// BP = BP indis
-	case 0x92: 
+		// Func Call:
+		// push PC
+		// push BP
+		// PC = new PC (jump)
+		// BP = BP indis
+	case 0x92:
 		fetch();
 		decode();
-		//push PC
+
+		//push PC-BP
 		Memory[++SP] = PC + 1;
-		//push BP
 		Memory[++SP] = BP;
 
-		//set PC 
+		//set PC and BP
 		Symbol symb = getSymbol(dat);
 		PC = symb.address;
-		//set BP
-		BP = SP;
+		BP = SP;	
 
-		#if DEBUG
-			printf("call %x (%d)\n", symb.symbol, PC);
-		#endif
+		funcDepth++;
+		currFunctionAddr = symb.address;
+
+#if DEBUG
+		printf("call %x (%d)\n", symb.symbol, PC);
+#endif
 
 		break;
+
+	case 0x93:	// Label Decleration
+		fetch();
+		decode();
+		Symbol symbol = getSymbol(dat);
+
+#if DEBUG
+		printf("label %x (%d)\n", symbol.symbol, PC);
+#endif
+		break;
+		}
 	}
 }
 
@@ -849,6 +962,7 @@ i32 VM::run()
 {
 	// Get main function address
 	PC = getSymbol(MAIN_SYMBOL).address;
+	currFunctionAddr = PC;
 	
 	while (running)
 	{
@@ -857,6 +971,24 @@ i32 VM::run()
 		execute();
 	}
 	printf("tos : %d  SP : %d\n", Memory[SP], SP);
+	return Memory[SP];
+}
+
+i32 VM::run_step()
+{
+	if (!init_step)
+	{
+		// Get main function address
+		PC = getSymbol(MAIN_SYMBOL).address;
+		init_step = true;
+	}
+	
+	if (running)
+	{
+		fetch();
+		decode();
+		execute();
+	}
 	return Memory[SP];
 }
 
@@ -886,10 +1018,58 @@ void VM::LoadBinary(string path)
 
 void VM::PrintStack()
 {
-	printf("[%d] || STACK ||\n", PC);
+	printf("(%d)\n", PC);
 	printf("Regs : PC : %d, BP : %d, SP %d, AX : %d, BX : %d\n", PC, BP, SP, AX, BX);
 	for (i32 i = 0; i <= SP; i++)
 	{
 		printf("[%d] : %d\n", i, Memory[i]);
+	}
+}
+
+// Out VM funcs
+// (Called from dynamic libraries)
+
+i32 VM::_GetRegisterValue(int regId)
+{
+	i32 val;
+	switch (regId) {
+	case 1:
+		val = AX;
+		break;
+	case 2:
+		val = BX;
+		break;
+	case 3:
+		val = SP;
+		break;
+	case 4:
+		val = BP;
+		break;
+	case 5:
+		val = PC;
+		break;
+
+	default:
+		val = 0xFFFFFFFF;
+		break;
+	}
+	return val;
+}
+
+i32 VM::_GetStackElement(int addr)
+{
+	return Memory[addr];
+}
+
+i32 VM::_Addr2Symbol(i32 addr)
+{
+	for (int i = 0; i < SymbolTable.size(); i++)
+	{
+		if (SymbolTable[i].address == addr)
+		{
+			return SymbolTable[i].symbol;
+		}
+		else
+			return 0xFFFFFFFF;
 	}
 }

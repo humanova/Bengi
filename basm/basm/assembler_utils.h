@@ -91,7 +91,7 @@ vector<ui32> Compile(strings s)
 			string func_name = s[i];
 			if (s[++i] != ":") //check :
 			{
-				cout << "basm error : invalid function decleration" << endl;
+				cout << "basm error : invalid function declaration" << endl;
 				exit(1);
 			}
 			str += s[i];
@@ -100,15 +100,24 @@ vector<ui32> Compile(strings s)
 			instructions.push_back(FuncInstruction);
 
 			// Get symbol by function name
-
 			ui32 FunctionSymbol = mapToSymbol(func_name);
 			printf("symbolizing function : %s (symbol : %x)\n", func_name.c_str(), FunctionSymbol);
 			instructions.push_back(FunctionSymbol);
+		}
+		// check if it's label declaration...
+		else if (s[i + 1] == ":")
+		{
+			string name = s[i++];
+			ui32 LabelInstruction = mapToNumber("label");
+			instructions.push_back(LabelInstruction);
 
+			// Get symbol by label name
+			ui32 LabelSymbol = mapToSymbol(name);
+			printf("symbolizing label : %s (symbol : %x)\n", name.c_str(), LabelSymbol);
+			instructions.push_back(LabelSymbol);
 		}
 		else
 		{
-
 			if (mapToNumber(s[i]) != -1)
 			{
 				ui32 instruction = mapToNumber(s[i]);
@@ -127,6 +136,7 @@ vector<ui32> Compile(strings s)
 			}
 		}
 	}
+
 	if (isMainDefined)
 	{
 		return instructions;
@@ -161,7 +171,7 @@ bool isAddress(string s)
 
 bool isFunction(string s)
 {
-	if (s == "." || s == ":")
+	if (s == ".")
 	{
 		return true;
 	}
@@ -308,6 +318,14 @@ ui32 mapToNumber(string s)
 	{
 		return 0x80000010;
 	}
+	else if (s == "inc")
+	{
+		return 0x80000011;
+	}
+	else if (s == "dec")
+	{
+		return 0x80000012;
+	}
 
 	// primitive instructions
 	else if (s == "push")
@@ -354,7 +372,10 @@ ui32 mapToNumber(string s)
 	{
 		return 0x80000092;
 	}
-
+	else if (s == "label")
+	{
+		return 0x80000093;
+	}
 
 	// registers
 	else if (s == "ax")
@@ -377,6 +398,7 @@ ui32 mapToNumber(string s)
 	{
 		return 0xc0000005;
 	}
+
 	// reg addresses
 	else if (s.front() == '[' && s.back() == ']') 
 	{
