@@ -860,7 +860,9 @@ void VM::doPrimitive()
 			printf("jnz %x (%d)\n", symb.symbol, PC);
 #endif
 		}
+		}
 		SP--;
+		
 		break;
 
 	case 0x57: // cmp
@@ -924,6 +926,7 @@ void VM::doPrimitive()
 		// PC = new PC (jump)
 		// BP = BP indis
 	case 0x92:
+	{
 		fetch();
 		decode();
 
@@ -942,10 +945,12 @@ void VM::doPrimitive()
 #if DEBUG
 		printf("call %x (%d)\n", symb.symbol, PC);
 #endif
-
+	}
 		break;
+	
 
 	case 0x93:	// Label Decleration
+	{
 		fetch();
 		decode();
 		Symbol symbol = getSymbol(dat);
@@ -953,8 +958,10 @@ void VM::doPrimitive()
 #if DEBUG
 		printf("label %x (%d)\n", symbol.symbol, PC);
 #endif
+	}
 		break;
-		}
+	
+		
 	}
 }
 
