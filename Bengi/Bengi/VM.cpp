@@ -27,13 +27,13 @@
 	Bengi calling convention:
 
 	caller :	push arg	//	push function args
-				call func	//	(push PC on stack, push BP on stack, set PC to func address, set BP to BP address)
-				pop arg		//	remove arguments
+			call func	//	(push PC on stack, push BP on stack, set PC to func address, set BP to BP address)
+			pop arg		//	remove arguments
 
 	callee :	push[-1]	//	get arg
-				mov ax [sp] //	set return value
-				pop			//	remove locals
-				ret			//	return (BP = old BP, pop, PC = old PC, pop)
+			mov ax [sp] 	//	set return value
+			pop		//	remove locals
+			ret		//	return (BP = old BP, pop, PC = old PC, pop)
 
 */
 
@@ -1028,6 +1028,11 @@ void VM::PrintStack()
 
 // Out VM funcs
 // (Called from dynamic libraries)
+
+int VM::_GetFuncDepth()
+{
+	return funcDepth;
+}
 
 i32 VM::_GetRegisterValue(int regId)
 {

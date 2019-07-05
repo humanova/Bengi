@@ -7,7 +7,7 @@
 
 // my test directiories
 #if defined(_WIN32)
-	string testFolder = "C:\\Users\\msi\\Desktop\\VSCode Folder\\Bengi-Lang\\tests\\";
+	string testFolder = "C:\\Users\\msi\\Desktop\\VSCode Folder\\Bengi-Lang\\Bengi\\tests\\";
 #elif defined (__linux__)
 	string testFolder = "home\\humanova\\Documents\\pjs\\Bengi\\bengi\\tests\\";
 #endif

@@ -24,13 +24,13 @@ CURRENT :
 	Bengi calling convention:
 
 	caller :	push arg	//	push function args
-				call func	//	(push PC on stack, push BP on stack, set PC to func address, set BP to BP address)
-				pop arg		//	remove arguments
+			call func	//	(push PC on stack, push BP on stack, set PC to func address, set BP to BP address)
+			pop arg		//	remove arguments
 
 	callee :	push[-1]	//	get arg
-				mov ax [sp] //	set return value
-				pop			//	remove locals
-				ret			//	return (BP = old BP, pop, PC = old PC, pop)
+			mov ax [sp] 	//	set return value
+			pop		//	remove locals
+			ret		//	return (BP = old BP, pop, PC = old PC, pop)
 
 ====================================================
 TODO :
@@ -64,6 +64,6 @@ Sample instructions :
 Instruction Header	Data         
 PUSH		1000 0000	0000 0000 0000 0050  = PUSH
 PINT		0000 0001	0000 0000 0000 0050  = 80
-NINT        0000 0011	0000 0000 0000 0050  = -80
-SYMB        1111 0000	0000 0000 0000 1000  
+NINT        	0000 0011	0000 0000 0000 0050  = -80
+SYMB        	1111 0000	0000 0000 0000 1000  
 

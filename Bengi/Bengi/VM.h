@@ -81,8 +81,9 @@ public:
 	void PrintStack();
 	
 	//out funcs
-	i32 _GetStackElement(int addr);
+	int _GetFuncDepth();
 	i32 _GetRegisterValue(int regId);
+	i32 _GetStackElement(int addr);
 	i32 _Addr2Symbol(i32 addr);
 
 	i32 currFunctionAddr;

@@ -7,7 +7,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 #include "../Bengi/Bengi/VM.h"
 
-string testFolder = "C:\\Users\\msi\\Desktop\\VSCode Folder\\Bengi-Lang\\tests\\";
+string testFolder = "C:\\Users\\msi\\Desktop\\VSCode Folder\\Bengi-Lang\\Bengi\\tests\\";
 vector<string> test
 { testFolder + "test1.cben",
 	testFolder + "test2.cben",

@@ -44,15 +44,15 @@ int main(int argc, char *argv[])
 	// create and write instructions to a bin file
 	ofstream ofile;
 	string filename;
-    string fn = string(argv[1]);
-    fn = std::regex_replace(fn, std::regex("\\.basm"), "");
-    filename = fn + ".cben";
+    	string fn = string(argv[1]);
+    	fn = std::regex_replace(fn, std::regex("\\.basm"), "");
+    	filename = fn + ".cben";
 	
-    ofile.open(filename.c_str(), ios::binary);
-    for (ui32 i = 0; i < instructions.size(); i++)
-    {
-        ofile.write(reinterpret_cast<char *>(&instructions[i]), sizeof(ui32));
-    }
+    	ofile.open(filename.c_str(), ios::binary);
+    	for (ui32 i = 0; i < instructions.size(); i++)
+    	{
+        	ofile.write(reinterpret_cast<char *>(&instructions[i]), sizeof(ui32));
+    	}
 
 	ofile.close();
 	return 0;

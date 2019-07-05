@@ -63,6 +63,11 @@ DLLFUNC int isRunning()
 	return (int)(BengiVM->running);
 }
 
+DLLFUNC int GetFuncDepth()
+{
+	return BengiVM->_GetFuncDepth();
+}
+
 DLLFUNC i32 GetStackElement(int addr)
 {
 	return BengiVM->_GetStackElement(addr);

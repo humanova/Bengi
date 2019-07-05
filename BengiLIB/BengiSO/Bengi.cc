@@ -62,6 +62,11 @@ extern "C" int isRunning()
 	return (int)(BengiVM->running);
 }
 
+extern "C" int GetFuncDepth()
+{
+	return BengiVM->_GetFuncDepth();
+}
+
 extern "C" i32 GetStackElement(int addr)
 {
 	return BengiVM->_GetStackElement(addr);

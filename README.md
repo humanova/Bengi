@@ -79,7 +79,7 @@ int main()
 
 ## Usage
 
-Use `bengi -c fib.basm` or `basm fib.basm` to compile `fib.basm` file. Bengi Assembler finds function declerations and symbolizes them. So that we can call our already-declared functions.
+Use `bengi -c fib.basm` or `basm fib.basm` to compile `fib.basm` file. Bengi Assembler finds function declarations and symbolizes them. So that we can call our already-declared functions.
 
 ```
 $ bengi -c fib.basm

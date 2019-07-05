@@ -39,8 +39,8 @@ def PrintStack(stack):
 def PrintRegs(regs):
     print(Fore.LIGHTYELLOW_EX + f"[REGS] : AX = {regs[0]} BX = {regs[1]} SP = {regs[2]} BP = {regs[3]} PC = {regs[4]}")
 
-def PrintStep(step, tos, stack, regs):
-    print(Fore.LIGHTGREEN_EX + f"(step {step} PC:{regs[4]}) : tos = {tos}")
+def PrintStep(step, tos, stack, regs, funcDepth, currFuncSymbol):
+    print(Fore.LIGHTGREEN_EX + f"(step {step} PC:{regs[4]} funcDepth:{funcDepth} currFunc:{currFuncSymbol}) : tos = {tos}")
     PrintRegs(regs)
     PrintStack(stack)
 
@@ -58,8 +58,10 @@ def RunCBEN(path):
             stackPtr = Bengi.GetRegister(3)
             stack = GetStack(Bengi, stackPtr)
             regs = GetRegisters(Bengi)
+            funcDepth = Bengi.GetFuncDepth()
+            currFuncSymbol = Bengi.GetCurrFuncSymbol()
 
-            PrintStep(stepCounter, tos, stack, regs)
+            PrintStep(stepCounter, tos, stack, regs, funcDepth, currFuncSymbol)
 
             stepCounter += 1
 
