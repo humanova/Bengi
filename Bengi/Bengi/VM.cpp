@@ -41,6 +41,20 @@
 #include <string>
 #pragma warning(disable : 4996)
 
+#if DEBUG
+	#define DEBUG_PRINT_SINGLE_INST(inst_str) cout << inst_str << endl
+	#define DEBUG_PRINT_ARITHMETIC_INST(inst_str, val1, val2) cout << inst_str << " " << val1 << " " << val2 << endl
+	#define DEBUG_PRINT_BASIC_INST(inst_str, param_str) cout << inst_str << " " << param_str << endl
+	#define DEBUG_PRINT_MOV_INST(dest, src) cout << "mov " << dest << ", " << src << endl
+	#define DEBUG_PRINT_SYMB_PC_PARAM(inst_str, symb, pc) cout << inst_str << " " << hex << symb << " " << dec << pc << endl
+#else
+	#define DEBUG_PRINT_SINGLE_INST(inst_str)
+	#define DEBUG_PRINT_ARITHMETIC_INST(inst_str, val1, val2)
+	#define DEBUG_PRINT_BASIC_INST(inst_str, param_str)
+	#define DEBUG_PRINT_MOV_INST(dest, src)
+	#define DEBUG_PRINT_SYMB_PC_PARAM(inst_str, symb, pc)
+#endif
+
 VM::VM()
 {
 	Memory.resize(MEMORY_BUFFER);
@@ -57,27 +71,32 @@ i32 VM::getType(ui32 instruction)
 	i32 data;
 	switch (type)
 	{
-		// primitive inst
-		case 4:
-			type =  INST;
-			break;
-		case 0:
+		case 0x0:
 			type = PINT;
 			break;
-		case 1:
+
+		case 0x1:
 			type = NINT;
 			break;
-		case 3:
-			type = ADDR;
-			break;
-		case 2:
+
+		case 0x2:
 			type = NADDR;
 			break;
-		case 6:
+
+		case 0x3:
+			type = ADDR;
+			break;
+
+		case 0x4:
+			type =  INST;
+			break;
+
+		case 0x6:
 			// Check if its REG or REGADDR
 			type = getRegType(instruction);
 			break;
-		case 7:
+
+		case 0x7:
 			type = SYMB;
 			break;
 
@@ -92,37 +111,12 @@ i32 VM::getData(ui32 instruction)
 {
 	ui32 buff = 0x1fffffff;
 	i32 data;
-	if (typ == PINT)
+	if (typ == PINT || typ == INST || typ == REG || typ == REGADDR || typ == ADDR)
 	{
 		data = buff & instruction;
 		return data;
 	}
-	else if (typ == NINT)
-	{
-		data = -1 * (buff & instruction);
-		return data;
-	}
-	else if (typ == INST)
-	{
-		data = buff & instruction;
-		return data;
-	}
-	else if (typ == REG) 
-	{
-		data = buff & instruction;
-		return data;
-	}
-	else if (typ == REGADDR)
-	{
-		data = buff & instruction;
-		return data;
-	}
-	else if (typ == ADDR)
-	{
-		data = buff & instruction;
-		return data;
-	}
-	else if (typ == NADDR)
+	else if (typ == NINT || typ == NADDR)
 	{
 		data = -1 * (buff & instruction);
 		return data;
@@ -140,36 +134,41 @@ i32 VM::getData(ui32 instruction)
 
 i32* VM::getRegisterAddress(i32 data)
 {
+	i32* addr;
 	if (data == 0xf1)
 	{
 		curr_addr = "[ax]";
-		return &Memory[AX];
+		addr = &Memory[AX];
 	}
 	else if (data == 0xf2)
 	{
 		curr_addr = "[bx]";
-		return &Memory[BX];
+		addr = &Memory[BX];
 	}
 	else if (data == 0xf3)
 	{
 		curr_addr = "[sp]";
-		return &Memory[SP];
+		addr = &Memory[SP];
 	}
 	else if (data == 0xf4)
 	{
 		curr_addr = "[bp]";
-		return &Memory[BP];
+		addr = &Memory[BP];
 	}
+	else
+	{
+		printf("bengivm error : [PC=%d] invalid register instruction : %x", PC, data);
+		exit(1);
+	}
+
+	return addr;
 }
 
 i32* VM::getAddress(i32 data)
 {
 	// Stack frame icindeysek negatif degerlerden 1 cikaricaz 
 	// orn : [-1] olan her NADDR [-2] olacak 
-	char buffer[33];
-	string data_str = to_string(data);
-	data_str = "[" + data_str + "]";
-	curr_addr = data_str;
+	curr_addr = "[" + to_string(data) + "]";
 	if (BP != 0 && data < 0)
 	{
 		data -= 1;
@@ -308,127 +307,108 @@ void VM::doPrimitive()
 {
 	switch (dat)
 	{
-	case 0x0: // halt
 
+	case 0x0: // halt
 		running = 0;
-#if DEBUG
-		cout << "end" << endl;
-#endif
+		DEBUG_PRINT_SINGLE_INST("end");
 		break;
 
 		// == Arithmetic Instructions ==
 	case 0x1: // add
-#if DEBUG
-		cout << "add " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("add", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] + Memory[SP];
 		SP--;
 		break;
+
 	case 0x2: // sub
-#if DEBUG
-		cout << "sub " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("sub", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] - Memory[SP];
 		SP--;
 		break;
+
 	case 0x3: // mul
-#if DEBUG
-		cout << "mul " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("mul", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] * Memory[SP];
 		SP--;
 		break;
+
 	case 0x4: // div
-#if DEBUG
-		cout << "div " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("div", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] / Memory[SP];
 		SP--;
 		break;
+
 	case 0x5: // mod
-#if DEBUG
-		cout << "mod " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("mod", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] % Memory[SP];
 		SP--;
 		break;
+
 	case 0x6: // or
-#if DEBUG
-		cout << "or " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("or", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] | Memory[SP];
 		SP--;
 		break;
+
 	case 0x7: // xor
-#if DEBUG
-		cout << "xor " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("xor", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] ^ Memory[SP];
 		SP--;
 		break;
 	case 0x8: // and
-#if DEBUG
-		cout << "and " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("and", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] & Memory[SP];
 		SP--;
 		break;
+
 	case 0x9: // equal
-#if DEBUG
-		cout << "eq " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("eq", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] == Memory[SP];
 		SP--;
 		break;
+
 	case 0xA: // not eq
-#if DEBUG
-		cout << "ne " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("ne", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] != Memory[SP];
 		SP--;
 		break;
+
 	case 0xB: // lt
-#if DEBUG
-		cout << "lt " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("lt", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] < Memory[SP];
 		SP--;
 		break;
+
 	case 0xC: // lt eq
-#if DEBUG
-		cout << "le " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("le", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] <= Memory[SP];
 		SP--;
 		break;
+
 	case 0xD: // gt
-#if DEBUG
-		cout << "gt " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("gt", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] > Memory[SP];
 		SP--;
 		break;
+
 	case 0xE: // gt eq
-#if DEBUG
-		cout << "ge " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("ge", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] >= Memory[SP];
 		SP--;
 		break;
+
 	case 0xF: // sh left
-#if DEBUG
-		cout << "shl " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("shl", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] << Memory[SP];
 		SP--;
 		break;
+
 	case 0x10: // sh right
-#if DEBUG
-		cout << "shr " << Memory[SP - 1] << " " << Memory[SP] << endl;
-#endif
+		DEBUG_PRINT_ARITHMETIC_INST("shr", Memory[SP - 1], Memory[SP]);
 		Memory[SP - 1] = Memory[SP - 1] >> Memory[SP];
 		SP--;
 		break;
+
 	case 0x11:
 		fetch();
 		decode();
@@ -436,24 +416,20 @@ void VM::doPrimitive()
 		{
 			i32* reg = getRegister(dat);
 			*reg += 1;
-#if DEBUG
-			cout << "inc " << getRegisterName(reg) << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("inc", getRegisterName(reg));
 		}
 		else if (typ == REGADDR)
 		{
 			i32* reg = getRegister(dat);
 			*reg += 1;
-#if DEBUG
-			cout << "inc " << curr_addr.c_str() << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("inc", curr_addr.c_str());
 		}
 		else if (typ == ADDR)
 		{
 			i32* addr = getAddress(dat);
 			*addr += 1;
 #if DEBUG
-			cout << "inc " << curr_addr.c_str() << endl;
+			DEBUG_PRINT_BASIC_INST("inc", curr_addr.c_str());
 #endif
 		}
 		else
@@ -470,25 +446,19 @@ void VM::doPrimitive()
 		{
 			i32* reg = getRegister(dat);
 			*reg -= 1;
-#if DEBUG
-			cout << "dec " << getRegisterName(reg) << " " << *reg << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("dec", getRegisterName(reg));
 		}
 		else if (typ == REGADDR)
 		{
 			i32* reg = getRegister(dat);
 			*reg -= 1;
-#if DEBUG
-			cout << "dec " << curr_addr.c_str() << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("dec", curr_addr.c_str());
 		}
 		else if (typ == ADDR)
 		{
 			i32* addr = getAddress(dat);
 			*addr -= 1;
-#if DEBUG
-			cout << "dec " << curr_addr.c_str() << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("dec", curr_addr.c_str());
 		}
 		else
 		{
@@ -505,39 +475,30 @@ void VM::doPrimitive()
 		decode();
 		if (typ == PINT || typ == NINT)
 		{
-#if DEBUG
-			cout << "push " << dat << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("push", dat);
 			SP++;
 			Memory[SP] = dat;
 		}
 		else if (typ == REG)
 		{
 			i32* reg = getRegister(dat);
-#if DEBUG
-			cout << "push " << getRegisterName(reg) << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("push", getRegisterName(reg));
 			SP++;
 			Memory[SP] = *reg;
 		}
 		else if (typ == REGADDR)
 		{
 			i32* reg = getRegister(dat);
-#if DEBUG
-			cout << "push " << curr_addr.c_str() << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("push", curr_addr.c_str());
 			SP++;
 			Memory[SP] = *reg;
 		}
 		else if (typ == ADDR || typ == NADDR)
 		{
 			i32* addr = getAddress(dat);
-#if DEBUG
-			cout << "push " << curr_addr.c_str() << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("push", curr_addr.c_str());
 			SP++;
 			Memory[SP] = *addr;
-
 		}
 		else
 		{
@@ -548,9 +509,7 @@ void VM::doPrimitive()
 
 	case 0x51: // pop
 		SP--;
-#if DEBUG
-		cout << "pop" << endl;
-#endif
+		DEBUG_PRINT_SINGLE_INST("pop");
 		break;
 
 	case 0x52: // load (mov ax, ?) 
@@ -558,33 +517,25 @@ void VM::doPrimitive()
 		decode();
 		if (typ == PINT || typ == NINT)
 		{
-#if DEBUG
-			cout << "load " << dat << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("load", dat);
 			AX = dat;
 		}
 		else if (typ == REG)
 		{
 			i32* reg = getRegister(dat);
-#if DEBUG
-			cout << "load " << getRegisterName(reg) << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("load", getRegisterName(reg));
 			AX = *reg;
 		}
 		else if (typ == REGADDR)
 		{
 			i32* reg = getRegister(dat);
-#if DEBUG
-			cout << "load " << curr_addr.c_str() << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("load", curr_addr.c_str());
 			AX = *reg;
 		}
 		else if (typ == ADDR || typ == NADDR)
 		{
 			i32* addr = getAddress(dat);
-#if DEBUG
-			cout << "load " << curr_addr.c_str() << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("load", curr_addr.c_str());
 			AX = *addr;
 		}
 		else
@@ -609,46 +560,37 @@ void VM::doPrimitive()
 			{
 				i32 *reg = getRegister(dest);
 
-#if DEBUG
+				#if DEBUG
 				const char* dest_reg_name;
 				if (dest_type == REG)
 					dest_reg_name = getRegisterName(reg);
 				else
 					dest_reg_name = curr_addr.c_str();;
-#endif
+				#endif
 
 				if (src_type == PINT || src_type == NINT)
 				{
-#if DEBUG
-					cout << "mov " << dest_reg_name << ", " << src << endl;
-#endif
+					DEBUG_PRINT_MOV_INST(dest_reg_name, src);
 					*reg = dat;
 				}
 				else if (src_type == REG)
 				{
 					i32* src_reg = getRegister(src);
-#if DEBUG
-					cout << "mov " << dest_reg_name << ", " << getRegisterName(src_reg) << endl;
-#endif
+					DEBUG_PRINT_MOV_INST(dest_reg_name, getRegisterName(src_reg));
 					*reg = *src_reg;
 				}
 				else if (src_type == REGADDR)
 				{
 
 					i32* src_reg = getRegister(src);
-#if DEBUG
-					cout << "mov " << dest_reg_name << ", " << curr_addr.c_str() << endl;
-#endif
+					DEBUG_PRINT_MOV_INST(dest_reg_name, curr_addr.c_str());
 					*reg = *src_reg;
 				}
 				else if (src_type == ADDR || src_type == NADDR)
 				{
 					i32* src_addr = getAddress(src);
-#if DEBUG
-					cout << "mov " << dest_reg_name << ", " << curr_addr.c_str() << endl;
-#endif
+					DEBUG_PRINT_MOV_INST(dest_reg_name, curr_addr.c_str());
 					*reg = *src_addr;
-
 				}
 				else
 				{
@@ -662,33 +604,25 @@ void VM::doPrimitive()
 				string dest_name = curr_addr;
 				if (src_type == PINT || src_type == NINT)
 				{
-#if DEBUG
-					cout << "mov " << dest_name.c_str() << ", " << src << endl;
-#endif
+					DEBUG_PRINT_MOV_INST(dest_name.c_str(), src);
 					*dest_addr = src;
 				}
 				else if (src_type == REG)
 				{
 					i32* src_reg = getRegister(src);
-#if DEBUG
-					cout << "mov " << dest_name.c_str() << ", " << src_reg << endl;
-#endif
+					DEBUG_PRINT_MOV_INST(dest_name.c_str(), getRegisterName(src_reg));
 					*dest_addr = *src_reg;
 				}
 				else if (src_type == REGADDR)
 				{
 					i32* src_reg = getRegister(src);
-#if DEBUG
-					cout << "mov " << dest_name.c_str() << ", " << curr_addr.c_str() << endl;
-#endif
+					DEBUG_PRINT_MOV_INST(dest_name.c_str(), curr_addr.c_str());
 					*dest_addr = *src_reg;
 				}
 				else if (src_type == ADDR || src_type == NADDR)
 				{
 					i32* src_addr = getAddress(src);
-#if DEBUG
-					cout << "mov " << dest_name.c_str() << ", " << curr_addr.c_str() << endl;
-#endif
+					DEBUG_PRINT_MOV_INST(dest_name.c_str(), curr_addr.c_str());
 					*dest_addr = *src_addr;
 				}
 				else
@@ -712,33 +646,25 @@ void VM::doPrimitive()
 		{
 			if (typ == PINT)
 			{
-#if DEBUG
-				cout << "jmp " << dat << endl;
-#endif
+				DEBUG_PRINT_BASIC_INST("jmp", dat);
 				PC = dat - 1;
 			}
 			else if (typ == REG)
 			{
 				i32* dest_reg = getRegister(dat);
-#if DEBUG
-				cout << "jmp " << getRegisterName(dest_reg) << endl;
-#endif
+				DEBUG_PRINT_BASIC_INST("jmp", getRegisterName(dest_reg));
 				PC = *dest_reg - 1;
 			}
 			else if (typ == REGADDR)
 			{
 				i32* dest_reg = getRegister(dat);
-#if DEBUG
-				cout << "jmp " << curr_addr.c_str() << endl;
-#endif
+				DEBUG_PRINT_BASIC_INST("jmp", curr_addr.c_str());
 				PC = *dest_reg - 1;
 			}
 			else if (typ == ADDR || typ == NADDR)
 			{
 				i32* dest_addr = getAddress(dat);
-#if DEBUG
-				cout << "jmp " << curr_addr.c_str() << endl;
-#endif
+				DEBUG_PRINT_BASIC_INST("jmp", curr_addr.c_str());
 				PC = *dest_addr - 1;
 			}
 			else
@@ -755,35 +681,27 @@ void VM::doPrimitive()
 		{
 		if (typ == PINT)
 		{
-#if DEBUG
-			cout << "jz " << dat << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("jz", dat);
 			if (Memory[SP] == 0) { PC = dat - 1; }
 		}
 		else if (typ == REG)
 		{
 			i32* dest_reg = getRegister(dat);
-#if DEBUG
-			cout << "jz " << getRegisterName(dest_reg) << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("jz", getRegisterName(dest_reg));
 			if (Memory[SP] == 0) { PC = *dest_reg - 1; }
 
 		}
 		else if (typ == REGADDR)
 		{
 			i32* dest_reg = getRegister(dat);
-#if DEBUG
-			cout << "jz " << curr_addr.c_str() << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("jz", curr_addr.c_str());
 			if (Memory[SP] == 0) { PC = *dest_reg - 1; }
 
 		}
 		else if (typ == ADDR || typ == NADDR)
 		{
 			i32 *dest_addr = getAddress(dat);
-#if DEBUG
-			cout << "jz " << curr_addr.c_str() << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("jz", curr_addr.c_str());
 			if (Memory[SP] == 0) { PC = *dest_addr - 1; }
 
 		}
@@ -794,9 +712,7 @@ void VM::doPrimitive()
 			{
 				PC = symb.address;
 			}
-#if DEBUG
-			printf("jz %x (%d)\n", symb.symbol, PC);
-#endif
+			DEBUG_PRINT_SYMB_PC_PARAM("jz", symb.symbol, PC);
 		}
 		else
 		{
@@ -812,9 +728,7 @@ void VM::doPrimitive()
 		{
 		if (typ == PINT)
 		{
-#if DEBUG
-			cout << "jnz " << dat << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("jnz", dat);
 			if (Memory[SP] != 0)
 			{
 				PC = dat - 1;
@@ -823,25 +737,19 @@ void VM::doPrimitive()
 		else if (typ == REG)
 		{
 			i32* dest_reg = getRegister(dat);
-#if DEBUG
-			cout << "jnz " << getRegisterName(dest_reg) << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("jnz", getRegisterName(dest_reg));
 			if (Memory[SP] != 0) { PC = *dest_reg - 1; }
 		}
 		else if (typ == REG)
 		{
 			i32* dest_reg = getRegister(dat);
-#if DEBUG
-			cout << "jnz " << curr_addr.c_str() << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("jnz", curr_addr.c_str());
 			if (Memory[SP] != 0) { PC = *dest_reg - 1; }
 		}
 		else if (typ == ADDR || typ == NADDR)
 		{
 			i32* dest_addr = getAddress(dat);
-#if DEBUG
-			cout << "jnz " << getRegisterName(dest_addr) << endl;
-#endif
+			DEBUG_PRINT_BASIC_INST("jnz", curr_addr.c_str());
 			if (Memory[SP] != 0) { PC = *dest_addr - 1; }
 			else
 			{
@@ -856,9 +764,7 @@ void VM::doPrimitive()
 			{
 				PC = symb.address;
 			}
-#if DEBUG
-			printf("jnz %x (%d)\n", symb.symbol, PC);
-#endif
+			DEBUG_PRINT_SYMB_PC_PARAM("jnz", symb.symbol, PC);
 		}
 		}
 		SP--;
@@ -870,33 +776,25 @@ void VM::doPrimitive()
 		decode();
 		if (typ == PINT || typ == NINT)
 		{
-#if DEBUG
-			cout << "cmp " << Memory[SP] << " " << dat << endl;
-#endif
+			DEBUG_PRINT_ARITHMETIC_INST("cmp", Memory[SP], dat);
 			Memory[SP] = (Memory[SP] == dat);
 		}
 		else if (typ == REG)
 		{
 			i32* reg = getRegister(dat);
-#if DEBUG
-			cout << "cmp " << Memory[SP] << " " << getRegisterName(reg) << endl;
-#endif
+			DEBUG_PRINT_ARITHMETIC_INST("cmp", Memory[SP], getRegisterName(reg));
 			Memory[SP] = (Memory[SP] == *reg);
 		}
 		else if (typ == REGADDR)
 		{
 			i32* reg = getRegister(dat);
-#if DEBUG
-			cout << "cmp " << Memory[SP] << " " << curr_addr.c_str() << endl;
-#endif
+			DEBUG_PRINT_ARITHMETIC_INST("cmp", Memory[SP], curr_addr.c_str());
 			Memory[SP] = (Memory[SP] == *reg);
 		}
 		else if (typ == ADDR || typ == NADDR)
 		{
 			i32* addr = getAddress(dat);
-#if DEBUG
-			cout << "cmp " << Memory[SP] << " " << curr_addr.c_str() << endl;
-#endif
+			DEBUG_PRINT_ARITHMETIC_INST("cmp", Memory[SP], curr_addr.c_str());
 			Memory[SP] = (Memory[SP] == *addr);
 		}
 		else
@@ -904,27 +802,28 @@ void VM::doPrimitive()
 			cout << "bengivm error : invalid 'cmp' argument" << endl;
 		}
 		break;
+
 	case 0x90:	// Function Decleration
 		fetch();
 		decode();
 		break;
 
 	case 0x91: // Func Return
+
 		BP = Memory[SP--];
 		PC = Memory[SP--] - 1;
 		
 		funcDepth--;
 		currFunctionAddr = PC;
-#if DEBUG
-		printf("ret (%d)\n", PC);
-#endif
+
+		DEBUG_PRINT_BASIC_INST("ret", PC);
 		break;
 
-		// Func Call:
-		// push PC
-		// push BP
-		// PC = new PC (jump)
-		// BP = BP indis
+	// Func Call:
+	// push PC
+	// push BP
+	// PC = new PC (jump)
+	// BP = BP indis
 	case 0x92:
 	{
 		fetch();
@@ -937,31 +836,25 @@ void VM::doPrimitive()
 		//set PC and BP
 		Symbol symb = getSymbol(dat);
 		PC = symb.address;
-		BP = SP;	
+		BP = SP;
 
 		funcDepth++;
 		currFunctionAddr = symb.address;
 
-#if DEBUG
-		printf("call %x (%d)\n", symb.symbol, PC);
-#endif
+		DEBUG_PRINT_SYMB_PC_PARAM("call", symb.symbol, PC);
 	}
 		break;
 	
-
 	case 0x93:	// Label Decleration
 	{
 		fetch();
 		decode();
 		Symbol symbol = getSymbol(dat);
 
-#if DEBUG
-		printf("label %x (%d)\n", symbol.symbol, PC);
-#endif
+		DEBUG_PRINT_SYMB_PC_PARAM("label", symbol.symbol, PC);
 	}
 		break;
 	
-		
 	}
 }
 
@@ -987,6 +880,7 @@ i32 VM::run_step()
 	{
 		// Get main function address
 		PC = getSymbol(MAIN_SYMBOL).address;
+		currFunctionAddr = PC;
 		init_step = true;
 	}
 	

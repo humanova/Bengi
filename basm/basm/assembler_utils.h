@@ -231,14 +231,18 @@ ui32 mapToSymbol(string s)
 		}
 		else
 		{
-			cout << "basm error : function 'main' is already defined" << endl;
+			cout << "basm error : 'main' is already defined" << endl;
 			exit(1);
 		}
 	}
 	else
 	{
 		if (CheckDefined(s))
+		{
+			cout << "basm error : '" << s << "' is already defined" << endl;
 			exit(1);
+		}
+			
 		Symbol symbol;
 		symbol.name = s;
 		symbol.symbol = SymbolTable.back().symbol + 0x10;
