@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{404D8402-3914-4206-931F-CF2B67A556BB}"
 	ProjectSection(SolutionItems) = preProject
 		Bengi Instructions.txt = Bengi Instructions.txt
+		travis.yml = travis.yml
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bengi", "Bengi\Bengi\Bengi.vcxproj", "{4A49431D-108C-46E4-8F11-20912BF35E18}"
