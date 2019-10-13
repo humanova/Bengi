@@ -428,9 +428,7 @@ void VM::doPrimitive()
 		{
 			i32* addr = getAddress(dat);
 			*addr += 1;
-#if DEBUG
 			DEBUG_PRINT_BASIC_INST("inc", curr_addr.c_str());
-#endif
 		}
 		else
 		{

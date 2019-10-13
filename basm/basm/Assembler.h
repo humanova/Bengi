@@ -1,4 +1,8 @@
+// 2019 Emir Erbasan(humanova)
+// GPL v2 License, see LICENSE for more details
+
 #include <iostream>
+#include "InstructionMap.h"
 #include "Lexer.h"
 
 typedef uint32_t ui32;
@@ -12,11 +16,13 @@ struct Symbol
 };
 
 vector<Symbol> SymbolTable;
+map<string, ui32> instructionMap;
 bool isMainDefined = false;
 
 // function decl.
 vector<ui32> Compile(strings s);
 void DefineMain();
+void SetInstructionMap();
 bool CheckDefined(string func_name);
 ui32 mapToNumber(string s);
 ui32 mapToSymbol(string s);
@@ -29,7 +35,8 @@ bool isNegative(string s);
 
 
 vector<ui32> Compile(strings s)
-{
+{	
+	SetInstructionMap();
 	DefineMain();
 	vector<ui32> instructions;
 	for (ui32 i = 0; i < s.size(); i++)
@@ -162,7 +169,7 @@ bool isInteger(string s)
 
 bool isAddress(string s)
 {
-	if (s == "[" || s == "]")
+	if (s == "[")
 	{
 		return true;
 	}
@@ -210,6 +217,13 @@ void DefineMain()
 	SymbolTable.push_back(symbol);
 }
 
+void SetInstructionMap()
+{
+	InstructionMap *iMap = new InstructionMap();
+	instructionMap = iMap->instructionMap;
+	delete iMap;
+}
+
 ui32 GetSymbol(string name)
 {
 	for (int i = 0; i < SymbolTable.size(); i++)
@@ -254,207 +268,35 @@ ui32 mapToSymbol(string s)
 
 ui32 mapToNumber(string s)
 {
-	if (s == "end")
-	{
-		return 0x80000000;
-	}
-	else if (s == "add")
-	{
-		return 0x80000001;
-	}
-	else if (s == "sub")
-	{
-		return 0x80000002;
-	}
-	else if (s == "mul")
-	{
-		return 0x80000003;
-	}
-	else if (s == "div")
-	{
-		return 0x80000004;
-	}
-	else if (s == "mod")
-	{
-		return 0x80000005;
-	}
-	else if (s == "or")
-	{
-		return 0x80000006;
-	}
-	else if (s == "xor")
-	{
-		return 0x80000007;
-	}
-	else if (s == "and")
-	{
-		return 0x80000008;
-	}
-	else if (s == "eq")
-	{
-		return 0x80000009;
-	}
-	else if (s == "ne")
-	{
-		return 0x8000000A;
-	}
-	else if (s == "lt")
-	{
-		return 0x8000000B;
-	}
-	else if (s == "le")
-	{
-		return 0x8000000C;
-	}
-	else if (s == "gt")
-	{
-		return 0x8000000D;
-	}
-	else if (s == "ge")
-	{
-		return 0x8000000E;
-	}
-	else if (s == "shl")
-	{
-		return 0x8000000F;
-	}
-	else if (s == "shr")
-	{
-		return 0x80000010;
-	}
-	else if (s == "inc")
-	{
-		return 0x80000011;
-	}
-	else if (s == "dec")
-	{
-		return 0x80000012;
-	}
+	if (instructionMap.count(s) > 0)
+		return instructionMap[s];
 
-	// primitive instructions
-	else if (s == "push")
-	{
-		return 0x80000050;
-	}
-	else if (s == "pop")
-	{
-		return 0x80000051;
-	}
-	else if (s == "load")
-	{
-		return 0x80000052;
-	}
-	else if (s == "mov")
-	{
-		return 0x80000053;
-	}
-	else if (s == "jmp")
-	{
-		return 0x80000054;
-	}
-	else if (s == "jz")
-	{
-		return 0x80000055;
-	}
-	else if (s == "jnz")
-	{
-		return 0x80000056;
-	}
-	else if (s == "cmp")
-	{
-		return 0x80000057;
-	}
-	else if (s == "func")
-	{
-		return 0x80000090;
-	}
-	else if (s == "ret")
-	{
-		return 0x80000091;
-	}
-	else if (s == "call")
-	{
-		return 0x80000092;
-	}
-	else if (s == "label")
-	{
-		return 0x80000093;
-	}
+	else if (GetSymbol(s) != -1)
+		return GetSymbol(s);
 
-	// registers
-	else if (s == "ax")
-	{
-		return 0xc0000001;
-	}
-	else if (s == "bx")
-	{
-		return 0xc0000002;
-	}
-	else if (s == "sp")
-	{
-		return 0xc0000003;
-	}
-	else if (s == "bp")
-	{
-		return 0xc0000004;
-	}	
-	else if (s == "pc")
-	{
-		return 0xc0000005;
-	}
-
-	// reg addresses
-	else if (s.front() == '[' && s.back() == ']') 
-	{
-		s.erase(0, 1); // delete [
-		s.pop_back();  // delete ]
-		if (s == "ax")
+	else if (s.front() == '[' && s.back() == ']')
+	{	
+		if (s[1] == '-')
 		{
-			return 0xc00000f1;
-		}
-		else if (s == "bx")
-		{
-			return 0xc00000f2;
-		}
-		else if (s == "sp")
-		{
-			return 0xc00000f3;
-		}
-		else if (s == "bp")
-		{
-			return 0xc00000f4;
+			s.erase(0, 2);
+			s.pop_back();
+			ui32 addr = stoi(s);
+			return 0x40000000 | addr;
 		}
 		else
 		{
-			// Check if addr is negative or not
-			ui32 instruction;
-			if (s.front() == '-')
-			{
-				instruction = 0x40000000;
-				s.erase(0, 1);
-			}
-			else
-				instruction = 0x60000000;
+			s.erase(0, 1);
+			s.pop_back();
 			ui32 addr = stoi(s);
-			instruction = instruction | addr;
-			return instruction;
+			return 0x60000000 | addr;
 		}
 		cout << "basm error : invalid instruction [" << s << "]" << endl;
 		exit(1);
-
 	}
 	else
 	{
-		ui32 symbol = GetSymbol(s);
-		if (symbol != -1)
-			return symbol;
-		else
-		{
-			cout << "basm error : undefined symbol : '" << s << "'"<< endl;
-			exit(1);
-		}
+		cout << "basm error : invalid instruction " << s << endl;
+		exit(1);
 	}
 
-	cout << "basm error : invalid instruction [" << s << "]" << endl;
-	exit(1);
 }

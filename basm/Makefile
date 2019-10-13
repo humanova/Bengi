@@ -11,12 +11,12 @@ endif
 
 BUILD_DIR  = ../$(BIN)
 
-basm: Lexer.o benasm.o
-	g++ $(CFLAGS) -o $(BIN)/basm $(BIN)/Lexer.o $(BIN)/benasm.o 
+basm: Lexer.o main.o
+	g++ $(CFLAGS) -o $(BIN)/basm $(BIN)/Lexer.o $(BIN)/main.o 
 	cp -f $(BIN)/basm $(BUILD_DIR)
 
-benasm.o: $(SRC_DIR)/benasm.cpp
-	g++ $(CFLAGS) -c $(SRC_DIR)/benasm.cpp -o $(BIN)/benasm.o
+main.o: $(SRC_DIR)/main.cpp
+	g++ $(CFLAGS) -c $(SRC_DIR)/main.cpp -o $(BIN)/main.o
 
 Lexer.o: $(SRC_DIR)/Lexer.cpp
 	g++ $(CFLAGS) -c $(SRC_DIR)/Lexer.cpp -o $(BIN)/Lexer.o

@@ -4,4 +4,3 @@ language: cpp
 
 script:
 	- make bengi
-
