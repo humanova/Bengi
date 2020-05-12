@@ -35,8 +35,6 @@ CURRENT :
 ====================================================
 TODO :
 
-== Bengi Language & VM Instruction Format ==
-
 All instructions are 40 bits (5 bytes).
 First 8(Header) is Instruction Type, last 32 is Instruction Data.
 
