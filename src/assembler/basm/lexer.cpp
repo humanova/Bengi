@@ -7,8 +7,8 @@ Lexer::Lexer() {}
 
 bool Lexer::is_space(char c)
 {
-	switch (c)
-	{
+    switch (c)
+    {
         case '\n':
         case '\r':
         case '\t':
@@ -18,14 +18,14 @@ bool Lexer::is_space(char c)
             return true;
         default:
             return false;
-	}
+    }
 }
 
 bool Lexer::is_group(char c)
 {
-	beg_char = c;
-	switch (c)
-	{
+    beg_char = c;
+    switch (c)
+    {
         case '[':
             end_char = ']';
             return true;
@@ -33,24 +33,24 @@ bool Lexer::is_group(char c)
             return true;
         default:
             return false;
-	}
+    }
 }
 
 std::vector<std::string> Lexer::lex(std::string s)
 {
-	std::vector<std::string> lexeme_list;
+    std::vector<std::string> lexeme_list;
     State state = START;
-	char lexeme[256];
-	int g_idx = 0, l_idx = 0;
-	
+    char lexeme[256];
+    int g_idx = 0, l_idx = 0;
+
     int balance = 0;
     int len = s.length();
     bool done = 0;
 
-	while (g_idx < len)
-	{
-		switch (state)
-		{
+    while (g_idx < len)
+    {
+        switch (state)
+        {
             case START:
 
                 if (is_space(s[g_idx]))
@@ -149,12 +149,12 @@ std::vector<std::string> Lexer::lex(std::string s)
             case END:
                 g_idx = len;
                 break;
-		}
-	}
-	if (l_idx > 0)
-	{
-		lexeme[l_idx] = 0;
-		lexeme_list.push_back(lexeme);
-	}
-	return lexeme_list;
+        }
+    }
+    if (l_idx > 0)
+    {
+        lexeme[l_idx] = 0;
+        lexeme_list.push_back(lexeme);
+    }
+    return lexeme_list;
 }
