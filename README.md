@@ -1,10 +1,10 @@
-# BengiVM - BengiASM
+# BengiVM - BASM
 
 Stack Virtual Machine based programming language project.
 
 [blog post (turkish)](https://humanova.github.io/post/bengi)
 
-[debugging bengi programs using python tool](https://www.youtube.com/watch?v=mkqNtYPKTWQ)
+[debugging bengi programs using a python script](https://www.youtube.com/watch?v=mkqNtYPKTWQ)
 
 ## BASM Fibonacci Example
 
@@ -40,7 +40,7 @@ int main()
 
 .fib:
     mov bx [-1]   	//; copy func. argument to BX
-			//; as loop stop variable
+			        //; as loop stop variable
 
     push 2        	//; loop var
     mov ax 1
@@ -62,50 +62,55 @@ int main()
                 	//; check if loop var == loop stop var
     push bx      
     eq
-    jz 1012     	//; jump to loop start instruction (push ax)
+    jz 12     	    //; jump to loop start instruction (push ax)
                 	//; and pop stack
                 	//; loop end
 
     mov ax [sp]		//; write return value to AX
-    pop			//; remove function locals
+    pop             //; remove function locals
     pop
-    ret			//; return 
+    ret             //; return 
 
 .main:
-    push 20		//; push 20 as function argument
-    call fib 		//; call fibonacci function
-    pop			//; remove function argument
-    push ax		//; push function return value
-    end			//; end program
+    push 20		    //; push 20 as function argument
+    call fib        //; call fibonacci function
+    pop             //; remove function argument
+    push ax         //; push function return value
+    end             //; end program
 ```
 
 ## Usage
 
-Use `bengi -c fib.basm` or `basm fib.basm` to compile `fib.basm` file. Bengi Assembler finds function declarations and symbolizes them. So that we can call our already-declared functions.
+Use `bengi -c fib.basm` or `basm fib.basm` to compile `fib.basm` file.
 
 ```
 $ bengi -c fib.basm
-symbolizing function : fib (symbol : e0000010)
-symbolizing function : main (symbol : e0000000)
+$ ls
+fib.basm fib.cben
 ```
 
-After compiling `fib.basm` into `fib.cben`(which is a binary file), now use `bengi fib.cben` to run compiled file on VM.
+After compiling `fib.basm` into `fib.cben`(bytecode file), now use `bengi fib.cben` to run bytecode file in VM.
 
 ```
 $ bengi fib.cben
 tos : 6765  SP : 1
 ```
+VM returns `6765` which is 20th number of fibonacci.
 
-BengiVM loads the program, runs it on VM and returns `6765` which is 20th number of fibonacci.
+## Compiling
+```
+mkdir build
+cmake .. -DCMAKE_CXX_COMPILER=<your_cpp_compiler>
+cmake --build .
+```
 
 ## BASM Instruction Format
 ```text
-
 32 bit instructions
 first 3 bits : header
 next 29 bits : data
-Header format :
 
+Header format :
 100 : Primitive Instruction
 011 : Addressing ([10] etc.)
 010 : Negative Addressing ([-10] etc.)
@@ -114,12 +119,12 @@ Header format :
 000 : Positive Integer
 001 : Negative Integer
 
-register	data
-AX			0001
-BX			0002
-SP			0003
-BP			0004
-PC			0005
+reg   reg data    regaddr data
+AX    0001        00f1
+BX    0002        00f2
+SP    0003        00f3
+BP    0004        00f4
+PC    0005
 ```
 
 ## BASM Instruction Set
@@ -128,7 +133,7 @@ PC			0005
 
 5 VM Registers.
 
-![InstructionSet](doc/turkish/bengi/instruction_set.png)
+![InstructionSet](misc/doc/turkish/content/instruction_set.png)
 
 
 ## Registers
@@ -136,29 +141,25 @@ PC			0005
 
 |ID  | Register     | Purpose                                 | 
 |:---|:-------------|:----------------------------------------|
-| 1  | AX           | Stores any value                        |
-| 2  | BX           | Stores any value                        |  
-| 3  | SP           | Points top of the stack                 |
-| 4  | BP           | Points current function's stack frame   |
-| 5  | PC           | Points next instruction to run          |
+| 1  | AX           | Accumulator register                    |
+| 2  | BX           | Accumulator register                    |  
+| 3  | SP           | Points to top of the stack              |
+| 4  | BP           | Points to current function's stack frame|
+| 5  | PC           | Points to current instruction           |
 
+## Calling Convention
+Bengi calling convention works similar to _`__stdcall`_. Caller's function arguments be pushed onto the stack before the function call. Calee has to push arguments to its own stack frame and has to remove them before `return`. 
 
-## Bengi Calling Convention
-Bengi Calling Convention, is complete rule of calling any function. Bengi Calling Convention works similar to _`__stdcall`_. Every function argument is pushed on the stack.
-
-Calling Convention Pseudocode:
+Pseudocode:
 ```assembly
 caller :
-    push arg	        //;     push function arguments
-    call func	        //;	(push PC, push BP, PC = func address, BP = new BP)
-    pop arg	        //;	delete function arguments
+    push arg        //;  push function arguments
+    call func       //; (push PC, push BP, PC = func address, BP = new BP)
+    pop arg         //; delete function arguments
 
 callee :
-    push[-1]		//;	get last pushed value (argument)
-    mov ax [sp] 	//;	store return value on AX
-    pop			//;	remove locals(if there's any)
-    ret			//;	return (BP = old BP, pop, PC = old PC, pop)
+    push[-1]        //; get last pushed value (argument)
+    mov ax [sp]     //; store return value on AX
+    pop             //; remove locals(if there's any)
+    ret             //; return (BP = old BP, pop, PC = old PC, pop)
 ```
-
-
-

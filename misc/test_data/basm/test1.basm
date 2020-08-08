@@ -1,0 +1,43 @@
+//; arithmetic, logic test
+//; tos : 40
+.main:
+    push 2
+    push 6
+    add
+    push 4
+    mul
+    push 10 
+    mod
+    push 2
+    eq
+    push 0
+    xor
+    push 10
+    lt
+    push 0
+    gt
+    push 99
+    add
+    push 2
+    shr
+    push 25
+    eq
+    push 1
+    ne
+    push 0
+    le
+    push 2
+    ge      //; sp = 0
+    push 20
+    add     //; sp = 20
+    push 5 
+    sub
+    push 15
+    or      //; 15 | 15 = sp = 15
+    push 10 
+    and
+    push 2
+    shl     //; 1010 << 2 -> 101000 -> 40
+    inc [sp]
+    dec [sp]
+    end     //; tos : 40

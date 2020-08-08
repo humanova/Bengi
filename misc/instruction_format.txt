@@ -1,0 +1,29 @@
+header : 3 bits
+data : 29 bits
+
+header format :
+100 : Primitive Instruction
+011 : Addressing ([10] etc.)
+010 : Negative Addressing ([-10] etc.)
+110 : Register
+111 : Symbol
+000 : Positive Integer
+001 : Negative Integer
+
+reg         data    addr data
+AX          0001    00f1
+BX          0002    00f2
+SP          0003    00f3
+BP          0004    00f4
+PC          0005
+
+Bengi calling convention:
+
+caller :    push arg        // push function args
+            call func       // (push PC on stack, push BP on stack, set PC to func address, set BP to BP address)
+            pop arg         // remove arguments
+
+callee :    push[-1]        // get arg
+            mov ax [sp]     // set return value
+            pop             // remove locals
+            ret             // return (BP = old BP, pop, PC = old PC, pop)

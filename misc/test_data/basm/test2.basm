@@ -1,0 +1,27 @@
+//; register/address referencing test 1
+//; tos : 60
+.main:
+    push 5
+    push 7
+    push 15
+    mov ax 3     //; set ax to 3
+    add          //; add 15 to 7 write to sp - 1 -> 22
+    mul          //; multiply 5 by 22 write to sp - 1 -> 110
+    mov ax sp    //; copy sp to ax -> ax = 1
+    push ax
+    push [2]     //; push Mem[2] to stack (which is 1)
+    push 9
+    add
+    add
+    div          //; multiply 1 by 10
+    mov bx [sp]
+    push 5
+    push bx
+    mul
+    load 5
+    push ax 
+    div
+    load 2
+    mov [1] 50
+    add 
+    end          //; tos : 60

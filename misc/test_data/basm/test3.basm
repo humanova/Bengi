@@ -1,0 +1,21 @@
+//; register/address referencing test 2
+//; tos : 11
+.main:
+    push 30
+    push 20
+    push 10
+    load [sp]   //; mov ax [sp] -> ax = 10
+    add         //; sp = 20 + 10 -> 30
+    div         //; sp = 30 / 30 -> 1
+    push ax     //; sp = ax -> 10
+    add         //; sp = 1 + 10
+    load [1]    //; ax = sp[1] -> sp -> 11
+    push ax     //; sp = 11
+    add         //; sp = 11 + 11 -> 22
+    mov ax [sp] //; ax = 22
+    push ax     //; sp = 22
+    eq          //; sp = 22 == 22
+    mov ax 10   //; ax = 10
+    push ax     //; sp = 10
+    add         //; sp = 1 + 10
+    end         //; tos : 11
