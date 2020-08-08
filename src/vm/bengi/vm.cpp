@@ -409,7 +409,7 @@ void VM::execute()
             { throw(std::string("vm error : invalid label argument")); }
             break;
         default:
-			{ throw(std::string("vm error : invalid instruction")); }
+            { throw(std::string("vm error : invalid instruction")); }
             break;
     }           
     if (debug)
@@ -420,20 +420,20 @@ void VM::execute()
 
 extern "C" int32_t VM::_run_step()
 {
-	if (!_init_step)
-	{
-		PC = get_symbol_address(MAIN_SYMBOL);
-		_init_step = true;
-	}
+    if (!_init_step)
+    {
+        PC = get_symbol_address(MAIN_SYMBOL);
+        _init_step = true;
+    }
 
-	running = true;
-	if (running)
-	{
-		next();
-		decode();
-		execute();
-	}
-	return stack[SP];
+    running = true;
+    if (running)
+    {
+        next();
+        decode();
+        execute();
+    }
+    return stack[SP];
 }
 
 extern "C" uint32_t VM::_get_func_depth()

@@ -11,11 +11,11 @@ Bytecode::Bytecode(std::string filename)
 {
     if (Bytecode::check_file(filename))
     {
-	    Bytecode::size = get_file_size(filename) * sizeof(char);
-    	Bytecode::instruction_count = size / sizeof(uint32_t);
+        Bytecode::size = get_file_size(filename) * sizeof(char);
+        Bytecode::instruction_count = size / sizeof(uint32_t);
 
-    	Bytecode::data.resize(instruction_count);
-    	Bytecode::read_from_binary(filename);
+        Bytecode::data.resize(instruction_count);
+        Bytecode::read_from_binary(filename);
     }
 }
 

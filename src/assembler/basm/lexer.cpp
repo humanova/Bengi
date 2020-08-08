@@ -43,7 +43,7 @@ std::vector<std::string> Lexer::lex(std::string s)
 	char lexeme[256];
 	int g_idx = 0, l_idx = 0;
 	
-	int balance = 0;
+    int balance = 0;
     int len = s.length();
     bool done = 0;
 

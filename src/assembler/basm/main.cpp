@@ -19,7 +19,7 @@ cxxopts::ParseResult parse_args(int argc, char* argv[])
             ("h,help", "display help");
         options.add_options("Assembler")
             ("c,compile", "compile basm file", cxxopts::value<std::string>()->default_value("def"))
-			("o,output", "output file", cxxopts::value<std::string>()->default_value("def"))
+            ("o,output", "output file", cxxopts::value<std::string>()->default_value("def"))
             ("d,debug", "run in debugging mode", cxxopts::value<bool>()->default_value("false"));
             
         options.parse_positional({"compile"});
@@ -48,31 +48,31 @@ cxxopts::ParseResult parse_args(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
-	cxxopts::ParseResult args = parse_args(argc, argv);
+    cxxopts::ParseResult args = parse_args(argc, argv);
 
-	bool DEBUG_MODE = args["debug"].as<bool>(); 
-	std::string basm_file = args["compile"].as<std::string>();
-	std::string output_file = (args["output"].as<std::string>() == "def") ? (basm_file) : (args["output"].as<std::string>());
+    bool DEBUG_MODE = args["debug"].as<bool>(); 
+    std::string basm_file = args["compile"].as<std::string>();
+    std::string output_file = (args["output"].as<std::string>() == "def") ? (basm_file) : (args["output"].as<std::string>());
     
-	std::vector<uint32_t> instructions;
-	try{
-		Assembler assembler;
-		instructions = assembler.read_and_compile(basm_file);
-		assembler.write_file(output_file, instructions);
-	}
+    std::vector<uint32_t> instructions;
+    try{
+        Assembler assembler;
+        instructions = assembler.read_and_compile(basm_file);
+        assembler.write_file(output_file, instructions);
+    }
     catch(std::string& exception){
         std::cout << "error : " << exception << std::endl;
         exit(1);
     }
-	
-	if (DEBUG_MODE)
-	{
-		uint32_t idx = 1;
-		for (uint32_t& inst : instructions)
-		{
-			std::cout << std::dec << idx << std::hex << " : 0x" <<  inst << std::endl; idx++;
-		}
-	}
+    
+    if (DEBUG_MODE)
+    {
+        uint32_t idx = 1;
+        for (uint32_t& inst : instructions)
+        {
+            std::cout << std::dec << idx << std::hex << " : 0x" <<  inst << std::endl; idx++;
+        }
+    }
 
     return 0;
 }
