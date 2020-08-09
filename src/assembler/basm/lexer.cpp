@@ -1,7 +1,7 @@
 // (c) 2019, 2020 Emir Erbasan(humanova)
 // GPL v2 License, see LICENSE for more details
 
-#include "Lexer.h"
+#include "lexer.h"
 
 Lexer::Lexer() {}
 
