@@ -1,4 +1,5 @@
 # BengiVM - BASM
+[![Build Status](https://travis-ci.org/humanova/Bengi.svg?branch=master)](https://travis-ci.org/humanova/Bengi)
 
 Stack Virtual Machine based programming language project.
 
