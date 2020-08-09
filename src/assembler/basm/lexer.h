@@ -19,11 +19,11 @@ class Lexer
         COMMENT,
         END
     };
-	bool is_space(char c);
-	bool is_group(char c);
-	char end_char, beg_char;
+    bool is_space(char c);
+    bool is_group(char c);
+    char end_char, beg_char;
 
 public:
     Lexer();
-	std::vector<std::string> lex(std::string s);
+    std::vector<std::string> lex(std::string s);
 };

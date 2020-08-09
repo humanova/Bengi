@@ -4,6 +4,7 @@
 #include "vm.h"
 #include "bytecode.h"
 #include "version.h"
+#include "basm/assembler.h"
 
 #include "cxxopts.hpp"
 #include <iostream>
@@ -24,7 +25,7 @@ cxxopts::ParseResult parse_args(int argc, char* argv[])
             ("d,debug", "run in debugging mode", cxxopts::value<bool>()->default_value("false"));
         options.add_options("Assembler")
             ("c,compile", "compile basm file", cxxopts::value<std::string>())
-            ("o,output", "output file", cxxopts::value<std::string>()->default_value("a.cben"));
+            ("o,output", "output file", cxxopts::value<std::string>()->default_value("def"));
 
         options.parse_positional({"run"});
         auto res = options.parse(argc, argv); 
@@ -59,18 +60,36 @@ cxxopts::ParseResult parse_args(int argc, char* argv[])
 int main(int argc, char* argv[])
 {   
     cxxopts::ParseResult args = parse_args(argc, argv);
-    
+    bool DEBUG_MODE = args["debug"].as<bool>();   
+
     if (args.count("compile"))
     {
-        std::cout << "file to compile : " << args["compile"].as<std::string>() << std::endl;
-        // COMPILE 
-        // auto input_file = args["compile"].as<std::string>();
-        // auto output_file = args["output"].as<std::string>();
-        // THEN EXIT
-        exit(0);
+        auto input_file = args["compile"].as<std::string>();
+        auto output_file = (args["output"].as<std::string>() == "def") ? (input_file) : (args["output"].as<std::string>());
+        try
+        {
+            Assembler* assembler = new Assembler();
+            std::vector<uint32_t> instructions = assembler->read_and_compile(input_file);
+            assembler->write_file(output_file, instructions);
+            delete assembler;
+
+            if (DEBUG_MODE)
+            {
+                uint32_t idx = 1;
+                for (uint32_t& inst : instructions)
+                {
+                    std::cout << std::dec << idx << std::hex << " : 0x" <<  inst << std::endl; idx++;
+                }
+            }
+            exit(0);
+        } 
+        catch(std::string& exception)
+        {
+            std::cout << exception << std::endl;
+            exit(1);
+        }
     }
 
-    bool DEBUG_MODE = args["debug"].as<bool>();    
     std::string bytecode_file = args["run"].as<std::string>();  
     int32_t vm_result;
 

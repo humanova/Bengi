@@ -9,4 +9,4 @@ add_library(bengi_lib STATIC bengi/vm.cpp
 target_include_directories(bengi_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(bengi bengi/main.cpp)
-target_link_libraries(bengi PRIVATE bengi_lib cxxopts)
+target_link_libraries(bengi PRIVATE bengi_lib basm_lib cxxopts)
