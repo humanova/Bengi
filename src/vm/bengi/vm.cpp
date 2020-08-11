@@ -324,10 +324,24 @@ void VM::execute()
             }
             break;
 
+        case Opcode::JMP:
+            next();
+            decode();
+            if (i_type == IType::PINT)
+                PC = i_data - 1; 
+            else if (i_type == IType::REG || i_type == IType::REGADDR)
+                PC = *get_register(i_data) - 1;
+            else if (i_type == IType::ADDR || i_type == IType::NADDR)
+                PC = *get_address(i_data) - 1;
+            else if (i_type == IType::SYMB)
+                PC = get_symbol_address(i_data);
+            else { throw(std::string("vm error : invalid jmp argument")); }
+            break; 
+            
         case Opcode::JZ:
             next();
             decode();
-            if (i_type != IType::NINT && stack[SP] == 0)
+            if (stack[SP] == 0)
             {
                 if (i_type == IType::PINT)
                     PC = i_data - 1; 
@@ -345,7 +359,7 @@ void VM::execute()
         case Opcode::JNZ:
             next();
             decode();
-            if (i_type != IType::NINT && stack[SP] != 0)
+            if (stack[SP] != 0)
             {
                 if (i_type == IType::PINT)
                     PC = i_data - 1; 

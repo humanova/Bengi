@@ -63,7 +63,8 @@ int main(int argc, char* argv[])
     bool DEBUG_MODE = args["debug"].as<bool>();   
 
     if (args.count("compile"))
-    {
+    {   
+        // compile then exit
         auto input_file = args["compile"].as<std::string>();
         auto output_file = (args["output"].as<std::string>() == "def") ? (input_file) : (args["output"].as<std::string>());
         try

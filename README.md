@@ -24,7 +24,7 @@ int fibonacci(int n)
         prev = ret;
         ret = prev + prevprev;
     }
-	return ret;
+    return ret;
 }
 
 int main()
@@ -40,40 +40,40 @@ int main()
 //; fibonacci(n) function, bengi-asm
 
 .fib:
-    mov bx [-1]   	//; copy func. argument to BX
-			        //; as loop stop variable
+    mov bx [-1]     //; copy func. argument to BX
+                    //; as loop stop variable
 
-    push 2        	//; loop var
+    push 2          //; loop var
     mov ax 1
     push 1
-                  	//; loop start
+                    //; loop start
     push ax
     add
     push [sp]
     push ax
-    sub 
+    sub
     mov ax [sp]
     pop
-                  	//; loop var += 1
+                    //; loop var += 1
     push [1]
     push 1
     add
-                	//; copy loop var
+                    //; copy loop var
     mov [1] [sp]
-                	//; check if loop var == loop stop var
-    push bx      
+                    //; check if loop var == loop stop var
+    push bx
     eq
-    jz 12     	    //; jump to loop start instruction (push ax)
-                	//; and pop stack
-                	//; loop end
+    jz 12           //; jump to loop start instruction (push ax)
+                    //; and pop stack
+                    //; loop end
 
-    mov ax [sp]		//; write return value to AX
+    mov ax [sp]     //; write return value to AX
     pop             //; remove function locals
     pop
-    ret             //; return 
+    ret             //; return
 
 .main:
-    push 20		    //; push 20 as function argument
+    push 20         //; push 20 as function argument
     call fib        //; call fibonacci function
     pop             //; remove function argument
     push ax         //; push function return value
@@ -96,9 +96,11 @@ After compiling `fib.basm` into `fib.cben`(bytecode file), now use `bengi fib.cb
 $ bengi fib.cben
 tos : 6765  SP : 1
 ```
+
 VM returns `6765` which is 20th number of fibonacci.
 
 ## Compiling
+
 ```
 mkdir build
 cmake .. -DCMAKE_CXX_COMPILER=<your_cpp_compiler>
@@ -106,6 +108,7 @@ cmake --build .
 ```
 
 ## BASM Instruction Format
+
 ```text
 32 bit instructions
 first 3 bits : header
@@ -136,8 +139,8 @@ PC    0005
 
 ![InstructionSet](misc/doc/turkish/content/instruction_set.png)
 
-
 ## Registers
+
 ---
 
 |ID  | Register     | Purpose                                 | 
@@ -149,9 +152,11 @@ PC    0005
 | 5  | PC           | Points to current instruction           |
 
 ## Calling Convention
+
 Bengi calling convention works similar to _`__stdcall`_. Caller's function arguments be pushed onto the stack before the function call. Calee has to push arguments to its own stack frame and has to remove them before `return`. 
 
 Pseudocode:
+
 ```assembly
 caller :
     push arg        //;  push function arguments
