@@ -161,16 +161,16 @@ std::string Assembler::read_file(std::string filename)
 
     std::ifstream file(filename);
     if (!file.is_open())
-	{
-		throw(std::string("basm error : error while opening basm file"));
-	}
+    {
+        throw(std::string("basm error : error while opening basm file"));
+    }
 
-	std::string line, basm_content;
-	while(getline(file, line))
-		basm_content += line + "\n";
+    std::string line, basm_content;
+    while(getline(file, line))
+        basm_content += line + "\n";
 
     file.close();
-	return basm_content;
+    return basm_content;
 }
 
 void Assembler::write_file(std::string filename, std::vector<uint32_t> instructions)
