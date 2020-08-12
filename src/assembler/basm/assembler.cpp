@@ -105,10 +105,10 @@ uint32_t Assembler::map_to_binary(std::string s)
         } catch(std::exception& exception){throw (std::string("basm error : invalid instruction : ") + s);}
 
         if (addr_data >= 0)
-		    return cast_instruction(POSITIVEADDR_INST_BASE, (uint32_t)addr_data);
+            return cast_instruction(POSITIVEADDR_INST_BASE, (uint32_t)addr_data);
         else
             return cast_instruction(NEGATIVEADDR_INST_BASE, (uint32_t)(-1*addr_data));
-	}
+    }
     else {throw (std::string("basm error : invalid instruction (unknown) : ") + s);}
 }
 
