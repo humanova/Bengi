@@ -111,5 +111,5 @@ int main(int argc, char* argv[])
         exit(1);
     }
     
-    return vm_result;
+    return 0;
 }
