@@ -67,8 +67,8 @@ std::vector<uint32_t> Assembler::read_and_compile(std::string filename)
 
 uint32_t Assembler::add_symbol(std::string symbol_name)
 {
-    uint32_t symbol = symbol_map.at(symbol_map.begin()->first) + 0x10; // last symbol + 0x10
-    symbol_map.insert(std::pair<std::string, uint32_t>(symbol_name, symbol));  
+    uint32_t symbol = symbol_map.at("main") + (symbol_map.size() * 0x10); // last symbol + 0x10
+    symbol_map.insert(std::pair<std::string, uint32_t>(symbol_name, symbol)); 
     return symbol;
 }
 
