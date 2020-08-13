@@ -158,8 +158,8 @@ void VM::decode()
     i_data = get_data(code.data[PC]);
     if (debug)
     {
-        std::cout << std::hex << "inst : 0x" << code.data[PC] << std::dec << std::endl
-        << "type : " << i_type << ", data : " << i_data << std::endl << std::endl;
+        std::cout << std::hex << "inst : 0x" << code.data[PC] << std::dec
+        << "[type : " << i_type << ", data : " << i_data << "]" << std::endl;
     }
 }
 
