@@ -369,7 +369,7 @@ void VM::execute()
                     PC = *get_address(i_data) - 1;
                 else if (i_type == IType::SYMB)
                     PC = get_symbol_address(i_data);
-                else { throw(std::string("vm error : invalid jz argument")); }
+                else { throw(std::string("vm error : invalid jnz argument")); }
             }
             SP--;
             break; 
