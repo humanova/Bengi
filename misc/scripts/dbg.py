@@ -3,87 +3,80 @@
 
 # debugging script for bengi programs
 
-from colorama import init, Fore, Back, Style 
-from ctypes import CDLL, create_string_buffer, RTLD_GLOBAL, c_int32
 import sys
 import time
+import ctypes
 
-##init colorama
-init()
+class Bdbg:
 
-def LoadDLL():
-    if sys.platform == "win32":
-        Bengi = CDLL('./bengi.dll')
-    else:
-        Bengi = CDLL('./bengi.so')
-    return Bengi
+    def __init__(self, shared_lib_path, bytecode_path, step_interval):
+        self.vm = load_lib(shared_lib_path)
+        self.bytecode_file = ctypes.create_string_buffer(str.encode(bytecode_path)) 
+        self.step = 0
+        self.tos = -1
+        
+        self.step_interval = step_interval
+    
+    def load_lib(self, path):
+        try:
+            vm = ctypes.CDLL(path)
+        except Exception as e:
+            print(f"error while loading shared library : {e}")
+            exit(1)
+        return vm
 
-def GetStack(vm, stack_p):
-    stack = []
-    for i in range(stack_p + 1):
-        stack.append(vm.GetStackElement(i))
-    return stack
+    def get_vm_status(self):
+        stack = []
+        regs = []
 
-def GetRegisters(vm):
-    regs = []
-    for i in range(1, 6):
-        regs.append(vm.GetRegister(i))
+        stack_ptr = self.vm.get_register(3)
+        for i in range(stack_ptr + 1):
+            stack.append(self.vm.GetStackElement(i))
+        return stack
 
-    return regs
+        for i in range(1, 6):
+            regs.append(self.vm.GetRegister(i))
+        return regs
 
-def PrintStack(stack):
-    for i in range(len(stack)):
-        print(Fore.CYAN + f"[{i}] : {stack[i]}")
-    print(Style.RESET_ALL)
+        status = {"stack" : stack, 
+                  "registers" : regs, 
+                  "func_depth": self.vm._get_func_depth()}
+             
+        return status
 
-def PrintRegs(regs):
-    print(Fore.LIGHTYELLOW_EX + f"[REGS] : AX = {regs[0]} BX = {regs[1]} SP = {regs[2]} BP = {regs[3]} PC = {regs[4]}")
+    def print_step(self):
+        status = self.get_vm_status()
+        regs = status['registers']
+        stack = status['stack']
+        func_depth = status['func_depth']
 
-def PrintStep(step, tos, stack, regs, funcDepth, currFuncAddr):
-    print(Fore.LIGHTGREEN_EX + f"(step {step} PC:{regs[4]} funcDepth:{funcDepth} currFunc:{currFuncAddr}) : tos = {tos}")
-    PrintRegs(regs)
-    PrintStack(stack)
+        print(f"(step {self.step} PC:{regs[4]} funcDepth:{func_depth} : tos = {tos}")
+        print(f"[REGS] : AX = {regs[0]} BX = {regs[1]} SP = {regs[2]} BP = {regs[3]} PC = {regs[4]}")
+        for i in range(len(stack)):
+            print(f"[{i}] : {stack[i]}")
 
-def RunCBEN(path):
-    global step_interval
-    Bengi = LoadDLL()
-    p = create_string_buffer(str.encode(path))
-    is_ok = Bengi.LoadBinary(p)
-    tos = -1
-    if is_ok:
-        stepCounter = 1
-        while Bengi.isRunning():
-           
-            tos = Bengi.RunStep()
-            stackPtr = Bengi.GetRegister(3)
-            stack = GetStack(Bengi, stackPtr)
-            regs = GetRegisters(Bengi)
-            funcDepth = Bengi.GetFuncDepth()
-            currFuncAddr = Bengi.GetCurrFuncAddr()
-
-            PrintStep(stepCounter, tos, stack, regs, funcDepth, currFuncAddr)
-
-            stepCounter += 1
-
-            if not step_interval == 0:
-                time.sleep(step_interval)
-        return tos
-    else:
-        print("Error while loading .cben file...")
-        del Bengi
-        return None
+    def run(self):
+        if self.vm.load_bytecode(self.bytecode_file):
+            self.step = 1
+            while self.vm.is_running():
+                self.tos = self.vm.run_step()
+                self.print_step()
+                if not self.step_interval == 0:
+                    time.sleep(step_interval)
+                step += 1                
+            return tos
+        else:
+            print("Error while loading bytecode file...")
+            return None
 
 if __name__ == "__main__":
     step_interval = 0
-    
-    if len(sys.argv) == 2:
-        tos = RunCBEN(sys.argv[1])
-        print(f"bengi {sys.argv[1]} result : {tos}")
-    
-    elif len(sys.argv) == 3:
-        step_interval = float(sys.argv[2])
-        tos = RunCBEN(sys.argv[1])
-        print(f"bengi {sys.argv[1]} result : {tos}")
-         
-    else:
-        exit()
+
+    if 2 >= len(sys.argv) >= 3:
+        if sys.argv == 3:
+            step_interval = float(sys.argv[2])
+        
+        bytecode_file = sys.argv[1]
+        b = Bdbg('path_to_lib', bytecode_file, step_interval)
+        tos = b.run()
+        print(f"vm result : {tos}")
