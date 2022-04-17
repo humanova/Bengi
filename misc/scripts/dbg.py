@@ -74,6 +74,6 @@ if __name__ == "__main__":
             step_interval = float(sys.argv[2])
 
         bytecode_file = sys.argv[1]
-        b = Bdbg('../../lib/libbengi_lib.a', bytecode_file, step_interval)
+        b = Bdbg('path_to_shared_vm_lib', bytecode_file, step_interval)
         tos = b.run()
         print(f"vm result : {tos}")
