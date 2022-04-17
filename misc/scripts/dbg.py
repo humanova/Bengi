@@ -10,7 +10,7 @@ import ctypes
 class Bdbg:
 
     def __init__(self, shared_lib_path, bytecode_path, step_interval):
-        self.vm = load_lib(shared_lib_path)
+        self.vm = self.load_lib(shared_lib_path)
         self.bytecode_file = ctypes.create_string_buffer(str.encode(bytecode_path)) 
         self.step = 0
         self.tos = -1
@@ -29,12 +29,12 @@ class Bdbg:
         stack = []
         regs = []
 
-        stack_ptr = self.vm.get_register(3)
+        stack_ptr = self.vm._get_register_value(3)
         for i in range(stack_ptr + 1):
-            stack.append(self.vm.GetStackElement(i))
+            stack.append(self.vm._get_stack_element_value(i))
 
         for i in range(1, 6):
-            regs.append(self.vm.GetRegister(i))
+            regs.append(self.vm._get_register_value(i))
 
         status = {"stack" : stack, 
                   "registers" : regs, 
@@ -57,11 +57,11 @@ class Bdbg:
         if self.vm.load_bytecode(self.bytecode_file):
             self.step = 1
             while self.vm.is_running():
-                self.tos = self.vm.run_step()
+                self.tos = self.vm._run_step()
                 self.print_step()
                 if not self.step_interval == 0:
                     time.sleep(step_interval)
-                step += 1                
+                self.step += 1                
             return tos
         else:
             print("Error while loading bytecode file...")
