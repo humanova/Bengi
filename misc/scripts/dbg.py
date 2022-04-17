@@ -69,12 +69,11 @@ class Bdbg:
 
 if __name__ == "__main__":
     step_interval = 0
-
-    if 2 >= len(sys.argv) >= 3:
-        if sys.argv == 3:
+    if len(sys.argv) >= 2 and len(sys.argv) <=3:
+        if len(sys.argv) == 3:
             step_interval = float(sys.argv[2])
-        
+
         bytecode_file = sys.argv[1]
-        b = Bdbg('path_to_lib', bytecode_file, step_interval)
+        b = Bdbg('../../lib/libbengi_lib.a', bytecode_file, step_interval)
         tos = b.run()
         print(f"vm result : {tos}")
