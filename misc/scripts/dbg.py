@@ -32,11 +32,9 @@ class Bdbg:
         stack_ptr = self.vm.get_register(3)
         for i in range(stack_ptr + 1):
             stack.append(self.vm.GetStackElement(i))
-        return stack
 
         for i in range(1, 6):
             regs.append(self.vm.GetRegister(i))
-        return regs
 
         status = {"stack" : stack, 
                   "registers" : regs, 
