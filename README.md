@@ -3,10 +3,6 @@
 
 Stack Virtual Machine based programming language project.
 
-[blog post (turkish)](https://humanova.github.io/post/bengi)
-
-[debugging bengi programs using a python script](https://www.youtube.com/watch?v=mkqNtYPKTWQ)
-
 ## BASM Fibonacci Example
 
 (Note : On both implementations: iterative algorithm is used to get fibonacci(n).)
