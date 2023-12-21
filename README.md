@@ -3,9 +3,100 @@
 
 Stack Virtual Machine based programming language project.
 
+## Usage
+
+Compile `any.basm` file using either `bengi -c any.basm` or `basm any.basm`.
+
+```
+$ bengi -c fib.basm
+$ ls
+fib.basm fib.cben
+```
+
+After compiling `fib.basm` into `fib.cben` (bytecode file), use `bengi fib.cben` to run the bytecode file in the VM.
+
+```
+$ bengi fib.cben
+tos : 6765  SP : 1
+```
+
+VM returns `6765` which is 20th number of fibonacci.
+
+## Compiling
+
+```
+mkdir build
+cmake .. -DCMAKE_CXX_COMPILER=<your_cpp_compiler>
+cmake --build .
+```
+
+## BASM Instruction Format
+
+```text
+32 bit instructions
+first 3 bits : header
+next 29 bits : data
+
+Header format :
+100 : Primitive Instruction
+011 : Addressing ([10] etc.)
+010 : Negative Addressing ([-10] etc.)
+110 : Register
+111 : Symbol
+000 : Positive Integer
+001 : Negative Integer
+
+reg   reg data    regaddr data
+AX    0001        00f1
+BX    0002        00f2
+SP    0003        00f3
+BP    0004        00f4
+PC    0005
+```
+
+## BASM Instruction Set
+
+11 primitive, 16 arithmetic instructions.
+
+5 VM Registers.
+
+![InstructionSet](misc/doc/turkish/content/instruction_set.png)
+
+## Registers
+
+---
+
+|ID  | Register     | Purpose                                 | 
+|:---|:-------------|:----------------------------------------|
+| 1  | AX           | Accumulator register                    |
+| 2  | BX           | Accumulator register                    |  
+| 3  | SP           | Points to top of the stack              |
+| 4  | BP           | Points to current function's stack frame|
+| 5  | PC           | Points to current instruction           |
+
+## Calling Convention
+
+Bengi calling convention works similarly to `__stdcall`. The caller's function arguments are pushed onto the stack before the function call. The callee has to push arguments to its own stack frame and has to remove them before the `return`.
+
+Pseudocode:
+
+```assembly
+caller :
+    push arg        //;  push function arguments
+    call func       //; (push PC, push BP, PC = func address, BP = new BP)
+    pop arg         //; delete function arguments
+
+callee :
+    push[-1]        //; get last pushed value (argument)
+    mov ax [sp]     //; store return value on AX
+    pop             //; remove locals(if there's any)
+    ret             //; return (BP = old BP, pop, PC = old PC, pop)
+```
+
 ## BASM Fibonacci Example
 
-(Note : On both implementations: iterative algorithm is used to get fibonacci(n).)
+Note: In both implementations, an iterative algorithm is used to obtain Fibonacci(n).
+
 ### C Implementation
 
 ```c
@@ -74,94 +165,4 @@ int main()
     pop             //; remove function argument
     push ax         //; push function return value
     end             //; end program
-```
-
-## Usage
-
-Use `bengi -c fib.basm` or `basm fib.basm` to compile `fib.basm` file.
-
-```
-$ bengi -c fib.basm
-$ ls
-fib.basm fib.cben
-```
-
-After compiling `fib.basm` into `fib.cben`(bytecode file), now use `bengi fib.cben` to run bytecode file in VM.
-
-```
-$ bengi fib.cben
-tos : 6765  SP : 1
-```
-
-VM returns `6765` which is 20th number of fibonacci.
-
-## Compiling
-
-```
-mkdir build
-cmake .. -DCMAKE_CXX_COMPILER=<your_cpp_compiler>
-cmake --build .
-```
-
-## BASM Instruction Format
-
-```text
-32 bit instructions
-first 3 bits : header
-next 29 bits : data
-
-Header format :
-100 : Primitive Instruction
-011 : Addressing ([10] etc.)
-010 : Negative Addressing ([-10] etc.)
-110 : Register
-111 : Symbol
-000 : Positive Integer
-001 : Negative Integer
-
-reg   reg data    regaddr data
-AX    0001        00f1
-BX    0002        00f2
-SP    0003        00f3
-BP    0004        00f4
-PC    0005
-```
-
-## BASM Instruction Set
-
-11 primitive, 16 arithmetic instructions.
-
-5 VM Registers.
-
-![InstructionSet](misc/doc/turkish/content/instruction_set.png)
-
-## Registers
-
----
-
-|ID  | Register     | Purpose                                 | 
-|:---|:-------------|:----------------------------------------|
-| 1  | AX           | Accumulator register                    |
-| 2  | BX           | Accumulator register                    |  
-| 3  | SP           | Points to top of the stack              |
-| 4  | BP           | Points to current function's stack frame|
-| 5  | PC           | Points to current instruction           |
-
-## Calling Convention
-
-Bengi calling convention works similar to _`__stdcall`_. Caller's function arguments be pushed onto the stack before the function call. Calee has to push arguments to its own stack frame and has to remove them before `return`. 
-
-Pseudocode:
-
-```assembly
-caller :
-    push arg        //;  push function arguments
-    call func       //; (push PC, push BP, PC = func address, BP = new BP)
-    pop arg         //; delete function arguments
-
-callee :
-    push[-1]        //; get last pushed value (argument)
-    mov ax [sp]     //; store return value on AX
-    pop             //; remove locals(if there's any)
-    ret             //; return (BP = old BP, pop, PC = old PC, pop)
 ```
