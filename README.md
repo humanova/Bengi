@@ -1,7 +1,7 @@
 # BengiVM - BASM
 [![Build Status](https://travis-ci.org/humanova/Bengi.svg?branch=master)](https://travis-ci.org/humanova/Bengi)
 
-Stack Virtual Machine based programming language project.
+Bengi is a stack-based virtual machine designed as an educational toy project.
 
 ## Usage
 
@@ -13,7 +13,7 @@ $ ls
 fib.basm fib.cben
 ```
 
-After compiling `fib.basm` into `fib.cben` (bytecode file), use `bengi fib.cben` to run the bytecode file in the VM.
+Use `bengi any.cben` to run the bytecode file in the VM.
 
 ```
 $ bengi fib.cben
